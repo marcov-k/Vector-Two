@@ -11,4 +11,5 @@ public class Properties : MonoBehaviour
     public float2 p;
     public float ke;
     public float m = 1.0f;
+    public float e = 0.5f;
 }

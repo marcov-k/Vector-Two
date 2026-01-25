@@ -1,4 +1,3 @@
-using System.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using static Constants;
@@ -6,13 +5,23 @@ using static Constants;
 public class PhysObject : V2Component
 {
     public float Mass = 1.0f;
+    [Range(0.0f, 1.0f)] public float RestitutionCoefficient = 0.5f;
+    float InitialRotation;
+
+    protected override void InitObject()
+    {
+        base.InitObject();
+        InitialRotation = transform.eulerAngles.z;
+        transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+    }
 
     protected override void InitValues()
     {
         base.InitValues();
         Properties.m = Mass;
+        Properties.e = RestitutionCoefficient;
         Properties.pos = new(transform.position.x, transform.position.y);
-        Properties.rot = transform.eulerAngles.z;
+        Properties.rot = InitialRotation;
     }
 
     protected override void PhysUpdate()

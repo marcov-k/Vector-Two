@@ -4,7 +4,7 @@ using static Constants;
 
 public class V2Component : MonoBehaviour
 {
-    protected Properties Properties;
+    public Properties Properties;
     protected IEnumerator PhysUpdateCoroutine;
     protected IEnumerator VisUpdateCoroutine;
 

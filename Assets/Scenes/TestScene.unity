@@ -222,6 +222,7 @@ GameObject:
   - component: {fileID: 247050006}
   - component: {fileID: 247050005}
   - component: {fileID: 247050007}
+  - component: {fileID: 247050008}
   m_Layer: 0
   m_Name: TestBlock
   m_TagString: Untagged
@@ -293,7 +294,7 @@ Transform:
   m_GameObject: {fileID: 247050004}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.33, y: 14.94, z: 0}
+  m_LocalPosition: {x: -3.33, y: 48.9, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -311,7 +312,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d550054efae660a4a88368c31dc2fa4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Properties: {fileID: 0}
   Mass: 1
+  RestitutionCoefficient: 0.5
+--- !u!114 &247050008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 247050004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19719e94b6657b84185fb69b410cbd4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Properties: {fileID: 0}
+  physObject: {fileID: 0}
+  w: 0
+  h: 0
 --- !u!1 &1565574229
 GameObject:
   m_ObjectHideFlags: 0
@@ -324,6 +343,7 @@ GameObject:
   - component: {fileID: 1565574230}
   - component: {fileID: 1565574233}
   - component: {fileID: 1565574232}
+  - component: {fileID: 1565574234}
   m_Layer: 0
   m_Name: TestPlanet
   m_TagString: Untagged
@@ -396,7 +416,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 5, y: 5, z: 5}
+  m_LocalScale: {x: 50, y: 50, z: 50}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -413,7 +433,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d550054efae660a4a88368c31dc2fa4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Mass: 200
+  Properties: {fileID: 0}
+  Mass: 1000
+  RestitutionCoefficient: 0.5
 --- !u!114 &1565574233
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -424,6 +446,66 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 71be17015be08d84c878eafff759fb4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Properties: {fileID: 0}
+--- !u!114 &1565574234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1565574229}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab9e5ee3c9157a84f9cc3a15b027a576, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Properties: {fileID: 0}
+  physObject: {fileID: 0}
+  radius: 0
+--- !u!1 &1604305918
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1604305919}
+  - component: {fileID: 1604305920}
+  m_Layer: 0
+  m_Name: CollisionManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1604305919
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1604305918}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1604305920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1604305918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c24da8f3b15cab947ad5a861d7c3ec5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1793108214
@@ -476,5 +558,6 @@ SceneRoots:
   m_Roots:
   - {fileID: 167166003}
   - {fileID: 1793108216}
+  - {fileID: 1604305919}
   - {fileID: 1565574231}
   - {fileID: 247050006}
