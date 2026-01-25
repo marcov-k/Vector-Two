@@ -294,7 +294,7 @@ Transform:
   m_GameObject: {fileID: 247050004}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.33, y: 48.9, z: 0}
+  m_LocalPosition: {x: -13.99, y: 48.9, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -508,6 +508,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c24da8f3b15cab947ad5a861d7c3ec5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  markerPrefab: {fileID: 2042453832651097401, guid: e4031a372abe1e24fa354b99ac8bf940, type: 3}
 --- !u!1 &1793108214
 GameObject:
   m_ObjectHideFlags: 0

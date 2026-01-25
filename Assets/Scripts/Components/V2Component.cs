@@ -8,7 +8,7 @@ public class V2Component : MonoBehaviour
     protected IEnumerator PhysUpdateCoroutine;
     protected IEnumerator VisUpdateCoroutine;
 
-    protected virtual void Awake()
+    protected void Awake()
     {
         InitObject();
     }
@@ -18,7 +18,7 @@ public class V2Component : MonoBehaviour
         Properties = GetComponent<Properties>() ? GetComponent<Properties>() : gameObject.AddComponent<Properties>();
     }
 
-    protected virtual void Start()
+    protected void Start()
     {
         InitValues();
         InitUpdateLoops();

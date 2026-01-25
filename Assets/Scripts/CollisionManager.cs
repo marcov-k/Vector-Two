@@ -8,6 +8,7 @@ using System.Linq;
 public class CollisionManager : MonoBehaviour
 {
     IEnumerator collisionCoroutine;
+    [SerializeField] GameObject markerPrefab;
 
     void Awake()
     {
@@ -34,6 +35,10 @@ public class CollisionManager : MonoBehaviour
                 {
                     // test code for freezing simulation on collision
                     Time.timeScale = 0.0f;
+                    var aPos = collision.point.localA + (Vector2)collision.a.Properties.pos;
+                    var bPos = collision.point.localB + (Vector2)collision.b.Properties.pos;
+                    Instantiate(markerPrefab, aPos, Quaternion.identity);
+                    Instantiate(markerPrefab, bPos, Quaternion.identity);
                 }
             }
         }
