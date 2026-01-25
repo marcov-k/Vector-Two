@@ -14,4 +14,11 @@ public class V2Collider : V2Component
         renderer = GetComponent<SpriteRenderer>();
         physObject = GetComponent<PhysObject>();
     }
+
+    protected override void InitValues()
+    {
+        CalcMOI();
+    }
+
+    protected virtual void CalcMOI() { }
 }

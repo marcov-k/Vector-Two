@@ -4,6 +4,7 @@ using static Constants;
 using static V2Objects;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 
 public class CollisionManager : MonoBehaviour
 {
@@ -33,15 +34,62 @@ public class CollisionManager : MonoBehaviour
             {
                 if (ObjectCollision(colliders[i], colliders[j], out var collision))
                 {
-                    // test code for freezing simulation on collision
-                    Time.timeScale = 0.0f;
-                    var aPos = collision.point.localA + (Vector2)collision.a.Properties.pos;
-                    var bPos = collision.point.localB + (Vector2)collision.b.Properties.pos;
-                    Instantiate(markerPrefab, aPos, Quaternion.identity);
-                    Instantiate(markerPrefab, bPos, Quaternion.identity);
+                    ImpulseResolveCollision(collision);
                 }
             }
         }
+    }
+
+    void ImpulseResolveCollision(Collision collisionInfo)
+    {
+        var point = collisionInfo.point;
+        var a = collisionInfo.a;
+        var b = collisionInfo.b;
+
+        float massA = 1.0f / a.Properties.m;
+        float massB = 1.0f / b.Properties.m;
+        float totalMass = massA + massB;
+
+        var pointPos = point.localA + (Vector2)a.Properties.pos;
+
+        a.Properties.pos -= (float2)((massA / totalMass) * point.penetration * point.normal);
+        b.Properties.pos += (float2)((massB / totalMass) * point.penetration * point.normal);
+
+        var localA = pointPos - (Vector2)a.Properties.pos;
+        var localB = pointPos - (Vector2)b.Properties.pos;
+
+        float avA = a.Properties.av;
+        float avB = b.Properties.av;
+
+        var angVelA = Perp(avA, localA);
+        var angVelB = Perp(avB, localB);
+
+        var fullVelA = (Vector2)a.Properties.v + angVelA;
+        var fullVelB = (Vector2)b.Properties.v + angVelB;
+
+        var contactVel = fullVelB - fullVelA;
+
+        float impulseForce = Vector2.Dot(contactVel, point.normal);
+
+        float invInertiaA = 1.0f / a.Properties.moi;
+        float invInertiaB = 1.0f / b.Properties.moi;
+
+        var inertiaA = Cross(invInertiaA * Cross(localA, point.normal), localA);
+        var inertiaB = Cross(invInertiaB * Cross(localB, point.normal), localB);
+
+        float angularEffect = Vector2.Dot(inertiaA + inertiaB, point.normal);
+
+        float cRestitution = a.Properties.e * b.Properties.e;
+
+        float j = (-(1.0f + cRestitution) * impulseForce) / (totalMass + angularEffect);
+
+        var fullImpulse = point.normal * j;
+
+        a.physObject.AddLinearImpulse(-fullImpulse);
+        b.physObject.AddLinearImpulse(fullImpulse);
+
+        a.physObject.AddAngularImpulse(Cross(localA, -fullImpulse));
+        b.physObject.AddAngularImpulse(Cross(localB, fullImpulse));
     }
 
     bool ObjectCollision(V2Collider a, V2Collider b, out Collision collisionInfo)
@@ -99,7 +147,7 @@ public class CollisionManager : MonoBehaviour
 
         Vector2 relPos = b.Properties.pos - a.Properties.pos;
 
-        float rectRot = a.Properties.rot * Mathf.Deg2Rad;
+        float rectRot = a.Properties.Rot * Mathf.Deg2Rad;
 
         float cos = Mathf.Cos(-rectRot);
         float sin = Mathf.Sin(-rectRot);
@@ -328,6 +376,21 @@ public class CollisionManager : MonoBehaviour
         }
 
         return interval;
+    }
+
+    Vector2 Perp(float omega, Vector2 v)
+    {
+        return new(-omega * v.y, omega * v.x);
+    }
+
+    float Cross(Vector2 a, Vector2 b)
+    {
+        return a.x * b.y - a.y * b.x;
+    }
+
+    Vector2 Cross(float s, Vector2 v)
+    {
+        return new(-s * v.y, s * v.x);
     }
 }
 

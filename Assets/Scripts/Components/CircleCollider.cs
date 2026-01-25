@@ -6,7 +6,12 @@ public class CircleCollider : V2Collider
 
     protected override void InitValues()
     {
-        base.InitValues();
         radius = renderer.bounds.extents.y;
+        base.InitValues();
+    }
+
+    protected override void CalcMOI()
+    {
+        Properties.moi = 0.5f * Properties.m * Mathf.Pow(radius, 2.0f);
     }
 }

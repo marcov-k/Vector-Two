@@ -7,9 +7,14 @@ public class RectangleCollider : V2Collider
 
     protected override void InitValues()
     {
-        base.InitValues();
         w = renderer.bounds.extents.x;
         h = renderer.bounds.extents.y;
+        base.InitValues();
+    }
+
+    protected override void CalcMOI()
+    {
+        Properties.moi = (1.0f / 12.0f) * Properties.m * (Mathf.Pow(2.0f * w, 2.0f) + Mathf.Pow(2.0f * h, 2.0f));
     }
 
     public (Vector2[] vertices, Vector2[] normals) GetVerticesAndNormals()
@@ -17,7 +22,7 @@ public class RectangleCollider : V2Collider
         var vertices = new Vector2[4]; // clockwise from top left
         var normalVectors = new Vector2[4]; // clockwise from top
 
-        float theta = Properties.rot * Mathf.Deg2Rad;
+        float theta = Properties.Rot * Mathf.Deg2Rad;
         float theta2 = Mathf.Atan2(h, w);
         float d = Mathf.Sqrt(Mathf.Pow(w, 2.0f) + Mathf.Pow(h, 2.0f));
 

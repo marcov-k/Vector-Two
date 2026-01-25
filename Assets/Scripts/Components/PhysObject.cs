@@ -11,17 +11,18 @@ public class PhysObject : V2Component
     protected override void InitObject()
     {
         base.InitObject();
+        Properties.m = Mass;
+        Properties.e = RestitutionCoefficient;
+        Properties.pos = new(transform.position.x, transform.position.y);
         InitialRotation = transform.eulerAngles.z;
         transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+        Properties.Rot = 0.0f;
     }
 
     protected override void InitValues()
     {
+        Properties.Rot = InitialRotation;
         base.InitValues();
-        Properties.m = Mass;
-        Properties.e = RestitutionCoefficient;
-        Properties.pos = new(transform.position.x, transform.position.y);
-        Properties.rot = InitialRotation;
     }
 
     protected override void PhysUpdate()
@@ -30,8 +31,23 @@ public class PhysObject : V2Component
         CalcAccel();
         CalcVel();
         CalcPos();
+        CalcRot();
         CalcP();
         CalcKE();
+        ResetForce();
+        ResetAccel();
+    }
+
+    void ResetForce()
+    {
+        Properties.f = float2.zero;
+        Properties.t = 0.0f;
+    }
+
+    void ResetAccel()
+    {
+        Properties.a = float2.zero;
+        Properties.aa = 0.0f;
     }
 
     void CalcGravity()
@@ -68,17 +84,24 @@ public class PhysObject : V2Component
 
     void CalcAccel()
     {
-        Properties.a = Properties.f / Properties.m;
+        Properties.a += Properties.f / Properties.m;
+        Properties.aa += Properties.t / Properties.moi;
     }
 
     void CalcVel()
     {
         Properties.v += Properties.a * physTimestep;
+        Properties.av += Properties.aa * physTimestep;
     }
 
     void CalcPos()
     {
         Properties.pos += Properties.v * physTimestep;
+    }
+
+    void CalcRot()
+    {
+        Properties.Rot += Properties.av * physTimestep;
     }
 
     void CalcP()
@@ -95,6 +118,16 @@ public class PhysObject : V2Component
 
     protected override void VisUpdate()
     {
-        transform.SetPositionAndRotation(new(Properties.pos.x, Properties.pos.y), Quaternion.Euler(0.0f, 0.0f, Properties.rot));
+        transform.SetPositionAndRotation(new(Properties.pos.x, Properties.pos.y), Quaternion.Euler(0.0f, 0.0f, Properties.Rot));
+    }
+
+    public void AddLinearImpulse(Vector2 impulse)
+    {
+        Properties.v += (float2)impulse / Properties.m;
+    }
+
+    public void AddAngularImpulse(float impulse)
+    {
+        Properties.av += impulse / Properties.moi;
     }
 }
