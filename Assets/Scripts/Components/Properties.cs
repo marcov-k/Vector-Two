@@ -21,6 +21,7 @@ public class Properties : MonoBehaviour
     public float ke = 0.0f;
     public float m = 1.0f;
     public float e = 0.5f;
+    public float cof = 1.0f; // coefficient of friction
     public float moi = 1.0f; // moment of inertia around the z-axis
 
     float ClampRot(float rot)

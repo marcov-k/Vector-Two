@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using static Constants;
 using static V2Objects;
+using static VectorUtils;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
@@ -61,8 +62,8 @@ public class CollisionManager : MonoBehaviour
         float avA = a.Properties.av;
         float avB = b.Properties.av;
 
-        var angVelA = Perp(avA, localA);
-        var angVelB = Perp(avB, localB);
+        var angVelA = Cross(avA, localA);
+        var angVelB = Cross(avB, localB);
 
         var fullVelA = (Vector2)a.Properties.v + angVelA;
         var fullVelB = (Vector2)b.Properties.v + angVelB;
@@ -91,9 +92,10 @@ public class CollisionManager : MonoBehaviour
         a.physObject.AddAngularImpulse(Cross(localA, -fullImpulse));
         b.physObject.AddAngularImpulse(Cross(localB, fullImpulse));
 
-        // Calculate effect of friction:
+        float cof = (a.Properties.cof + b.Properties.cof) / 2.0f;
 
-
+        a.physObject.AddCollisionFriction(j, cof, point.normal, localA, b);
+        b.physObject.AddCollisionFriction(j, cof, point.normal, localB, a);
     }
 
     bool ObjectCollision(V2Collider a, V2Collider b, out Collision collisionInfo)
@@ -181,7 +183,6 @@ public class CollisionManager : MonoBehaviour
         Vector2 localB = contact - (Vector2)b.Properties.pos;
 
         float penetration = b.radius - dist;
-
         collisionInfo.AddContact(localA, localB, worldNormal, penetration);
 
         return true;
@@ -381,21 +382,6 @@ public class CollisionManager : MonoBehaviour
 
         return interval;
     }
-
-    Vector2 Perp(float omega, Vector2 v)
-    {
-        return new(-omega * v.y, omega * v.x);
-    }
-
-    float Cross(Vector2 a, Vector2 b)
-    {
-        return a.x * b.y - a.y * b.x;
-    }
-
-    Vector2 Cross(float s, Vector2 v)
-    {
-        return new(-s * v.y, s * v.x);
-    }
 }
 
 public struct Collision
@@ -416,4 +402,17 @@ public struct ContactPoint
     public Vector2 localB;
     public Vector2 normal;
     public float penetration;
+}
+
+public static class VectorUtils
+{
+    public static float Cross(Vector2 a, Vector2 b)
+    {
+        return a.x * b.y - a.y * b.x;
+    }
+
+    public static Vector2 Cross(float s, Vector2 v)
+    {
+        return new(-s * v.y, s * v.x);
+    }
 }

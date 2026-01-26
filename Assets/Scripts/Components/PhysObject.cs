@@ -1,11 +1,13 @@
 using Unity.Mathematics;
 using UnityEngine;
 using static Constants;
+using static VectorUtils;
 
 public class PhysObject : V2Component
 {
     public float Mass = 1.0f;
     [Range(0.0f, 1.0f)] public float RestitutionCoefficient = 0.5f;
+    public float FrictionCoefficient = 1.0f;
     float InitialRotation;
 
     protected override void InitObject()
@@ -13,6 +15,7 @@ public class PhysObject : V2Component
         base.InitObject();
         Properties.m = Mass;
         Properties.e = RestitutionCoefficient;
+        Properties.cof = FrictionCoefficient;
         Properties.pos = new(transform.position.x, transform.position.y);
         InitialRotation = transform.eulerAngles.z;
         transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
@@ -129,5 +132,26 @@ public class PhysObject : V2Component
     public void AddAngularImpulse(float impulse)
     {
         Properties.av += impulse / Properties.moi;
+    }
+
+    public void AddCollisionFriction(float j, float cof, Vector2 normal, Vector2 point, V2Collider b)
+    {
+        Vector2 parallel = new(-normal.y, normal.x);
+
+        float jFric = j * cof;
+        float dvFric = jFric / Properties.m;
+
+        float vParallel = Vector2.Dot(Properties.v, parallel);
+        float vParallelB = Vector2.Dot(b.Properties.v, parallel);
+        vParallel -= vParallelB;
+
+        dvFric = Mathf.Min(Mathf.Abs(dvFric), Mathf.Abs(vParallel));
+        dvFric = (vParallel > 0) ? -dvFric : dvFric;
+
+        jFric = dvFric * Properties.m;
+
+        var fullFric = jFric * parallel;
+        AddLinearImpulse(fullFric);
+        AddAngularImpulse(Cross(fullFric, point));
     }
 }
