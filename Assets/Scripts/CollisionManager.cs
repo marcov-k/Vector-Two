@@ -43,59 +43,52 @@ public class CollisionManager : MonoBehaviour
 
     void ImpulseResolveCollision(Collision collisionInfo)
     {
-        var point = collisionInfo.point;
         var a = collisionInfo.a;
         var b = collisionInfo.b;
+
+        var point = collisionInfo.point;
+        var n = point.normal;
+        Vector2 t = new(-n.y, n.x);
 
         float massA = 1.0f / a.Properties.m;
         float massB = 1.0f / b.Properties.m;
         float totalMass = massA + massB;
+        float iA = 1.0f / a.Properties.moi;
+        float iB = 1.0f / b.Properties.moi;
 
-        var pointPos = point.localA + (Vector2)a.Properties.pos;
+        var pointPos = point.localA + a.Properties.pos;
 
-        a.Properties.pos -= (float2)((massA / totalMass) * point.penetration * point.normal);
-        b.Properties.pos += (float2)((massB / totalMass) * point.penetration * point.normal);
+        a.Properties.pos -= ((massA / totalMass) * point.penetration * point.normal);
+        b.Properties.pos += ((massB / totalMass) * point.penetration * point.normal);
 
-        var localA = pointPos - (Vector2)a.Properties.pos;
-        var localB = pointPos - (Vector2)b.Properties.pos;
+        var localA = pointPos - a.Properties.pos;
+        var localB = pointPos - b.Properties.pos;
 
-        float avA = a.Properties.av;
-        float avB = b.Properties.av;
+        float wA = a.Properties.av;
+        float wB = b.Properties.av;
 
-        var angVelA = Cross(avA, localA);
-        var angVelB = Cross(avB, localB);
+        var vContA = a.Properties.v + Cross(wA, localA);
+        var vContB = b.Properties.v + Cross(wB, localB);
+        var vRel = vContB - vContA;
 
-        var fullVelA = (Vector2)a.Properties.v + angVelA;
-        var fullVelB = (Vector2)b.Properties.v + angVelB;
+        float vRelNorm = Vector2.Dot(vRel, n);
+        float vRelTang = Vector2.Dot(vRel, t);
 
-        var contactVel = fullVelB - fullVelA;
-
-        float impulseForce = Vector2.Dot(contactVel, point.normal);
-
-        float invInertiaA = 1.0f / a.Properties.moi;
-        float invInertiaB = 1.0f / b.Properties.moi;
-
-        var inertiaA = Cross(invInertiaA * Cross(localA, point.normal), localA);
-        var inertiaB = Cross(invInertiaB * Cross(localB, point.normal), localB);
-
-        float angularEffect = Vector2.Dot(inertiaA + inertiaB, point.normal);
-
-        float cRestitution = a.Properties.e * b.Properties.e;
-
-        float j = (-(1.0f + cRestitution) * impulseForce) / (totalMass + angularEffect);
-
-        var fullImpulse = point.normal * j;
-
-        a.physObject.AddLinearImpulse(-fullImpulse);
-        b.physObject.AddLinearImpulse(fullImpulse);
-
-        a.physObject.AddAngularImpulse(Cross(localA, -fullImpulse));
-        b.physObject.AddAngularImpulse(Cross(localB, fullImpulse));
-
+        float e = a.Properties.e * b.Properties.e;
         float cof = (a.Properties.cof + b.Properties.cof) / 2.0f;
 
-        a.physObject.AddCollisionFriction(j, cof, point.normal, localA, b);
-        b.physObject.AddCollisionFriction(j, cof, point.normal, localB, a);
+        float ratio = massA + massB + (Mathf.Pow(Cross(localA, n), 2.0f) * iA) + (Mathf.Pow(Cross(localB, n), 2.0f) * iB);
+        float jn = (-(1 + e) * vRelNorm) / ratio;
+        float jtMax = (-vRelTang) / ratio;
+        float jt = Mathf.Min(jtMax, cof * jn);
+
+        var totalJ = jn * n + jt * t;
+
+        a.physObject.AddLinearImpulse(-totalJ);
+        a.physObject.AddAngularImpulse(-Cross(localA, totalJ));
+
+        b.physObject.AddLinearImpulse(totalJ);
+        b.physObject.AddAngularImpulse(Cross(localB, totalJ));
     }
 
     bool ObjectCollision(V2Collider a, V2Collider b, out Collision collisionInfo)

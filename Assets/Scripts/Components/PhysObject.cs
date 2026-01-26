@@ -56,22 +56,22 @@ public class PhysObject : V2Component
     void CalcGravity()
     {
         Properties gProps;
-        float2 dPos;
+        Vector2 dPos;
         float r2;
         float r;
         float rRecip;
         float r2Recip;
         float mgMag;
         float g;
-        float2 mg;
+        Vector2 mg;
         foreach (var grav in V2Objects.gravities)
         {
             if (grav.gameObject != gameObject)
             {
                 gProps = grav.GetProperties();
                 dPos = gProps.pos - Properties.pos;
-                r2 = Mathf.Pow(dPos.x, 2.0f) + Mathf.Pow(dPos.y, 2.0f);
-                r = Mathf.Sqrt(r2);
+                r2 = dPos.sqrMagnitude;
+                r = dPos.magnitude;
                 if (r <= grav.FieldRadius)
                 {
                     rRecip = 1.0f / r;
@@ -126,32 +126,11 @@ public class PhysObject : V2Component
 
     public void AddLinearImpulse(Vector2 impulse)
     {
-        Properties.v += (float2)impulse / Properties.m;
+        Properties.v += impulse / Properties.m;
     }
 
     public void AddAngularImpulse(float impulse)
     {
         Properties.av += impulse / Properties.moi;
-    }
-
-    public void AddCollisionFriction(float j, float cof, Vector2 normal, Vector2 point, V2Collider b)
-    {
-        Vector2 parallel = new(-normal.y, normal.x);
-
-        float jFric = j * cof;
-        float dvFric = jFric / Properties.m;
-
-        float vParallel = Vector2.Dot(Properties.v, parallel);
-        float vParallelB = Vector2.Dot(b.Properties.v, parallel);
-        vParallel -= vParallelB;
-
-        dvFric = Mathf.Min(Mathf.Abs(dvFric), Mathf.Abs(vParallel));
-        dvFric = (vParallel > 0) ? -dvFric : dvFric;
-
-        jFric = dvFric * Properties.m;
-
-        var fullFric = jFric * parallel;
-        AddLinearImpulse(fullFric);
-        AddAngularImpulse(Cross(fullFric, point));
     }
 }
