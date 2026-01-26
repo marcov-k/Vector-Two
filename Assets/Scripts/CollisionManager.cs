@@ -90,6 +90,10 @@ public class CollisionManager : MonoBehaviour
 
         a.physObject.AddAngularImpulse(Cross(localA, -fullImpulse));
         b.physObject.AddAngularImpulse(Cross(localB, fullImpulse));
+
+        // Calculate effect of friction:
+
+
     }
 
     bool ObjectCollision(V2Collider a, V2Collider b, out Collision collisionInfo)

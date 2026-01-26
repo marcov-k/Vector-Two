@@ -101,7 +101,7 @@ public class PhysObject : V2Component
 
     void CalcRot()
     {
-        Properties.Rot += Properties.av * physTimestep;
+        Properties.Rot += Properties.av * Mathf.Rad2Deg * physTimestep;
     }
 
     void CalcP()
