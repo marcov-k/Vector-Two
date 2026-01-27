@@ -423,8 +423,12 @@ PrefabInstance:
       value: TestBlock
       objectReference: {fileID: 0}
     - target: {fileID: 8565769936125634643, guid: 520d564cb311df14ba3c978e1cd80d3b, type: 3}
-      propertyPath: RestitutionCoefficient
+      propertyPath: FrictionCoefficient
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8565769936125634643, guid: 520d564cb311df14ba3c978e1cd80d3b, type: 3}
+      propertyPath: RestitutionCoefficient
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
