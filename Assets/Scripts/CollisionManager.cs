@@ -52,6 +52,7 @@ public class CollisionManager : MonoBehaviour
 
         float massA = 1.0f / a.Properties.m;
         float massB = 1.0f / b.Properties.m;
+        float totalMass = massA + massB;
         float iA = 1.0f / a.Properties.moi;
         float iB = 1.0f / b.Properties.moi;
 
@@ -73,8 +74,8 @@ public class CollisionManager : MonoBehaviour
         float e = a.Properties.e * b.Properties.e;
         float cof = (a.Properties.cof + b.Properties.cof) / 2.0f;
 
-        float jn = (-(1 + e) * vRelNorm) / (massA + massB + (Mathf.Pow(Cross(localA, n), 2.0f) * iA) + (Mathf.Pow(Cross(localB, n), 2.0f) * iB));
-        float jtMax = (-vRelTang) / (massA + massB + (Mathf.Pow(Cross(localA, t), 2.0f) * iA) + (Mathf.Pow(Cross(localB, t), 2.0f) * iB));
+        float jn = (-(1 + e) * vRelNorm) / (totalMass + (Mathf.Pow(Cross(localA, n), 2.0f) * iA) + (Mathf.Pow(Cross(localB, n), 2.0f) * iB));
+        float jtMax = (-vRelTang) / (totalMass + (Mathf.Pow(Cross(localA, t), 2.0f) * iA) + (Mathf.Pow(Cross(localB, t), 2.0f) * iB));
         float fricLimit = Mathf.Abs(cof * jn);
         float jt = Mathf.Clamp(jtMax, -fricLimit, fricLimit);
 
@@ -91,8 +92,8 @@ public class CollisionManager : MonoBehaviour
         // correct positions to resolve overlap
 
         float stab = 0.5f; // stabilize movement via gradual application of correction
-        float slop = 0.3f; // allow small overlap to prevent jitter
-        var correction = Mathf.Max(point.penetration - slop, 0.0f) / (massA + massB) * stab * n;
+        float slop = 0.1f; // allow small overlap to prevent jitter
+        var correction = Mathf.Max(point.penetration - slop, 0.0f) / totalMass * stab * n;
         a.Properties.pos -= massA * correction;
         b.Properties.pos += massB * correction;
     }
@@ -254,8 +255,6 @@ public class CollisionManager : MonoBehaviour
         var refVertices = new Vector2[2];
         refVertices[0] = refPoints[refEdgeInt];
         refVertices[1] = (refEdgeInt < refPoints.Length - 1) ? refPoints[refEdgeInt + 1] : refPoints[0];
-
-        Vector2 negNorm = normal * -1.0f;
 
         int incEdgeInt = 0;
         greatestDot = Mathf.NegativeInfinity;

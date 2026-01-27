@@ -1,6 +1,8 @@
+using System.Threading.Tasks;
 using Unity.Mathematics;
 using UnityEngine;
 using static Constants;
+using static V2Objects;
 
 public class PhysObject : V2Component
 {
@@ -8,6 +10,7 @@ public class PhysObject : V2Component
     [Range(0.0f, 1.0f)] public float RestitutionCoefficient = 0.5f;
     public float FrictionCoefficient = 1.0f;
     float InitialRotation;
+    public int gravIndex = -1;
 
     protected override void InitObject()
     {
@@ -54,33 +57,25 @@ public class PhysObject : V2Component
 
     void CalcGravity()
     {
-        Properties gProps;
-        Vector2 dPos;
-        float r2;
-        float r2Recip;
-        float mgMag;
-        float g;
-        Vector2 dir;
-        Vector2 mg;
-
-        foreach (var grav in V2Objects.gravities)
+        Parallel.For(0, gravities.Count, i =>
         {
-            if (grav.gameObject != gameObject)
+            if (i != gravIndex)
             {
-                gProps = grav.Properties;
-                dPos = gProps.pos - Properties.pos;
-                r2 = dPos.sqrMagnitude;
+                var grav = gravities[i];
+                var gProps = grav.Properties;
+                var dPos = gProps.pos - Properties.pos;
+                float r2 = dPos.sqrMagnitude;
                 if (r2 <= grav.FieldRadius)
                 {
-                    r2Recip = 1.0f / r2;
-                    g = grav.Gm * r2Recip;
-                    mgMag = g * Properties.m;
-                    dir = dPos.normalized;
-                    mg = mgMag * dir;
+                    float r2Recip = 1.0f / r2;
+                    float g = grav.Gm * r2Recip;
+                    float mgMag = g * Properties.m;
+                    var dir = dPos.normalized;
+                    var mg = mgMag * dir;
                     Properties.f += mg;
                 }
             }
-        }
+        });
     }
 
     void CalcAccel()

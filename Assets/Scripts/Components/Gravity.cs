@@ -1,6 +1,8 @@
 using UnityEngine;
 using static Constants;
+using static V2Objects;
 
+[RequireComponent(typeof(PhysObject))]
 public class Gravity : V2Component
 {
     /// <summary>
@@ -8,11 +10,14 @@ public class Gravity : V2Component
     /// </summary>
     public float FieldRadius { get; protected set; }
     public float Gm { get; protected set; }
+    protected PhysObject physObject;
 
     protected override void InitObject()
     {
         base.InitObject();
-        V2Objects.gravities.Add(this);
+        physObject = GetComponent<PhysObject>();
+        gravities.Add(this);
+        physObject.gravIndex = gravities.IndexOf(this);
     }
 
     protected override void InitValues()

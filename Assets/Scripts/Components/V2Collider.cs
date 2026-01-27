@@ -1,4 +1,5 @@
 using UnityEngine;
+using static V2Objects;
 
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(PhysObject))]
@@ -10,7 +11,7 @@ public class V2Collider : V2Component
     protected override void InitObject()
     {
         base.InitObject();
-        V2Objects.colliders.Add(this);
+        colliders.Add(this);
         renderer = GetComponent<SpriteRenderer>();
         physObject = GetComponent<PhysObject>();
     }
