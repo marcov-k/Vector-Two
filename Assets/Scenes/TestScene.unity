@@ -288,6 +288,8 @@ MonoBehaviour:
   PhysicsFramerate: 120
   VisualsFramerate: 60
   minimumGravity: 0.01
+  fakeDrag: 0
+  dragDecay: 2
 --- !u!4 &1793108216
 Transform:
   m_ObjectHideFlags: 0
@@ -312,24 +314,12 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 4329948845216550545, guid: 520d564cb311df14ba3c978e1cd80d3b, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 4329948845216550545, guid: 520d564cb311df14ba3c978e1cd80d3b, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 4329948845216550545, guid: 520d564cb311df14ba3c978e1cd80d3b, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 4329948845216550545, guid: 520d564cb311df14ba3c978e1cd80d3b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -33.7
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4329948845216550545, guid: 520d564cb311df14ba3c978e1cd80d3b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 145.04
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 4329948845216550545, guid: 520d564cb311df14ba3c978e1cd80d3b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -363,17 +353,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4329948845216550545, guid: 520d564cb311df14ba3c978e1cd80d3b, type: 3}
-      propertyPath: m_ConstrainProportionsScale
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7573560660867906740, guid: 520d564cb311df14ba3c978e1cd80d3b, type: 3}
       propertyPath: m_Name
       value: TestBlock
-      objectReference: {fileID: 0}
-    - target: {fileID: 8565769936125634643, guid: 520d564cb311df14ba3c978e1cd80d3b, type: 3}
-      propertyPath: Mass
-      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 8565769936125634643, guid: 520d564cb311df14ba3c978e1cd80d3b, type: 3}
       propertyPath: RestitutionCoefficient
@@ -393,12 +375,8 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 305341860121796432, guid: 3613f803f02974b429583ae736c1125a, type: 3}
-      propertyPath: Mass
-      value: 10000000
-      objectReference: {fileID: 0}
-    - target: {fileID: 305341860121796432, guid: 3613f803f02974b429583ae736c1125a, type: 3}
       propertyPath: RestitutionCoefficient
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2139727118715977369, guid: 3613f803f02974b429583ae736c1125a, type: 3}
       propertyPath: m_LocalPosition.x

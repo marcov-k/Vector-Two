@@ -94,7 +94,9 @@ public class PhysObject : V2Component
     void CalcVel()
     {
         Properties.v += Properties.a * physTimestep;
+        Properties.v -= Properties.v * drag * physTimestep;
         Properties.av += Properties.aa * physTimestep;
+        Properties.av -= Properties.av * drag * physTimestep;
     }
 
     void CalcPos()

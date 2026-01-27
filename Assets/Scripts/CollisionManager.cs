@@ -56,13 +56,10 @@ public class CollisionManager : MonoBehaviour
         float iA = 1.0f / a.Properties.moi;
         float iB = 1.0f / b.Properties.moi;
 
-        var pointPos = point.localA + a.Properties.pos;
+        // calculate impulse of collision
 
-        a.Properties.pos -= ((massA / totalMass) * point.penetration * point.normal);
-        b.Properties.pos += ((massB / totalMass) * point.penetration * point.normal);
-
-        var localA = pointPos - a.Properties.pos;
-        var localB = pointPos - b.Properties.pos;
+        var localA = point.localA;
+        var localB = point.localB;
 
         float wA = a.Properties.av;
         float wB = b.Properties.av;
@@ -77,18 +74,28 @@ public class CollisionManager : MonoBehaviour
         float e = a.Properties.e * b.Properties.e;
         float cof = (a.Properties.cof + b.Properties.cof) / 2.0f;
 
-        float ratio = massA + massB + (Mathf.Pow(Cross(localA, n), 2.0f) * iA) + (Mathf.Pow(Cross(localB, n), 2.0f) * iB);
-        float jn = (-(1 + e) * vRelNorm) / ratio;
-        float jtMax = (-vRelTang) / ratio;
-        float jt = Mathf.Min(jtMax, cof * jn);
+        float jn = (-(1 + e) * vRelNorm) / (massA + massB + (Mathf.Pow(Cross(localA, n), 2.0f) * iA) + (Mathf.Pow(Cross(localB, n), 2.0f) * iB));
+        float jtMax = (-vRelTang) / (massA + massB + (Mathf.Pow(Cross(localA, t), 2.0f) * iA) + (Mathf.Pow(Cross(localB, t), 2.0f) * iB));
+        float fricLimit = Mathf.Abs(cof * jn);
+        float jt = Mathf.Clamp(jtMax, -fricLimit, fricLimit);
 
         var totalJ = jn * n + jt * t;
+
+        // apply calculated impulses
 
         a.physObject.AddLinearImpulse(-totalJ);
         a.physObject.AddAngularImpulse(-Cross(localA, totalJ));
 
         b.physObject.AddLinearImpulse(totalJ);
         b.physObject.AddAngularImpulse(Cross(localB, totalJ));
+
+        // correct positions to resolve overlap
+
+        float stab = 0.5f; // stabilize movement via gradual application of correction
+        float slop = 0.01f; // allow small overlap to prevent jitter
+        var correction = Mathf.Max(point.penetration - slop, 0.0f) / (massA + massB) * stab * n;
+        a.Properties.pos -= massA * correction;
+        b.Properties.pos += massB * correction;
     }
 
     bool ObjectCollision(V2Collider a, V2Collider b, out Collision collisionInfo)

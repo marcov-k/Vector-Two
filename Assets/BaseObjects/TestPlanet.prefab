@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2971452440474893000}
   - component: {fileID: 305341860121796432}
   - component: {fileID: 2247159716155508108}
+  - component: {fileID: 6582543894872512808}
   m_Layer: 0
   m_Name: TestPlanet
   m_TagString: Untagged
@@ -116,8 +117,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Properties: {fileID: 0}
-  Mass: 100000
+  Mass: 10000000
   RestitutionCoefficient: 0.5
+  FrictionCoefficient: 1
 --- !u!114 &2247159716155508108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -133,3 +135,28 @@ MonoBehaviour:
   Properties: {fileID: 0}
   physObject: {fileID: 0}
   radius: 0
+--- !u!114 &6582543894872512808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7501663648616642859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 944401e1de1696041807a0ebf9c25520, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pos: {x: 0, y: 0}
+  v: {x: 0, y: 0}
+  av: 0
+  a: {x: 0, y: 0}
+  aa: 0
+  f: {x: 0, y: 0}
+  t: 0
+  p: {x: 0, y: 0}
+  ke: 0
+  m: 1
+  e: 0.5
+  cof: 1
+  moi: 1
