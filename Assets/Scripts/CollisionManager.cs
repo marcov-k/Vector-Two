@@ -5,7 +5,7 @@ using static V2Objects;
 using static VectorUtils;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Mathematics;
+using System.Threading.Tasks;
 
 public class CollisionManager : MonoBehaviour
 {
@@ -29,16 +29,16 @@ public class CollisionManager : MonoBehaviour
 
     void CheckCollisions()
     {
-        for (int i = 0; i < colliders.Count; i++)
+        Parallel.For(0, colliders.Count, i =>
         {
-            for (int j = i + 1; j < colliders.Count; j++)
+            Parallel.For(i + 1, colliders.Count, j =>
             {
                 if (ObjectCollision(colliders[i], colliders[j], out var collision))
                 {
                     ImpulseResolveCollision(collision);
                 }
-            }
-        }
+            });
+        });
     }
 
     void ImpulseResolveCollision(Collision collisionInfo)
@@ -52,7 +52,6 @@ public class CollisionManager : MonoBehaviour
 
         float massA = 1.0f / a.Properties.m;
         float massB = 1.0f / b.Properties.m;
-        float totalMass = massA + massB;
         float iA = 1.0f / a.Properties.moi;
         float iB = 1.0f / b.Properties.moi;
 
@@ -177,10 +176,10 @@ public class CollisionManager : MonoBehaviour
 
         Vector2 worldNormal = new(localNormal.x * cos - localNormal.y * sin, localNormal.x * sin + localNormal.y * cos);
 
-        Vector2 contact = (Vector2)b.Properties.pos - (worldNormal * b.radius);
+        Vector2 contact = b.Properties.pos - (worldNormal * b.radius);
 
-        Vector2 localA = contact - (Vector2)a.Properties.pos;
-        Vector2 localB = contact - (Vector2)b.Properties.pos;
+        Vector2 localA = contact - a.Properties.pos;
+        Vector2 localB = contact - b.Properties.pos;
 
         float penetration = b.radius - dist;
         collisionInfo.AddContact(localA, localB, worldNormal, penetration);
@@ -315,8 +314,8 @@ public class CollisionManager : MonoBehaviour
 
         var (contact, penetration) = GetSingleContact(finalContacts, depths);
 
-        Vector2 localA = contact - (Vector2)collisionInfo.a.Properties.pos;
-        Vector2 localB = contact - (Vector2)collisionInfo.b.Properties.pos;
+        Vector2 localA = contact - collisionInfo.a.Properties.pos;
+        Vector2 localB = contact - collisionInfo.b.Properties.pos;
 
         collisionInfo.AddContact(localA, localB, normal, penetration);
 

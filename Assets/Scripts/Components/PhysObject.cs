@@ -1,7 +1,6 @@
 using Unity.Mathematics;
 using UnityEngine;
 using static Constants;
-using static VectorUtils;
 
 public class PhysObject : V2Component
 {
@@ -63,6 +62,7 @@ public class PhysObject : V2Component
         float g;
         Vector2 dir;
         Vector2 mg;
+
         foreach (var grav in V2Objects.gravities)
         {
             if (grav.gameObject != gameObject)
