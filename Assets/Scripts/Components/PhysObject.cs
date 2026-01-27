@@ -58,27 +58,25 @@ public class PhysObject : V2Component
         Properties gProps;
         Vector2 dPos;
         float r2;
-        float r;
-        float rRecip;
         float r2Recip;
         float mgMag;
         float g;
+        Vector2 dir;
         Vector2 mg;
         foreach (var grav in V2Objects.gravities)
         {
             if (grav.gameObject != gameObject)
             {
-                gProps = grav.GetProperties();
+                gProps = grav.Properties;
                 dPos = gProps.pos - Properties.pos;
                 r2 = dPos.sqrMagnitude;
-                r = dPos.magnitude;
-                if (r <= grav.FieldRadius)
+                if (r2 <= grav.FieldRadius)
                 {
-                    rRecip = 1.0f / r;
                     r2Recip = 1.0f / r2;
                     g = grav.Gm * r2Recip;
                     mgMag = g * Properties.m;
-                    mg = new(mgMag * dPos.x * rRecip, mgMag * dPos.y * rRecip);
+                    dir = dPos.normalized;
+                    mg = mgMag * dir;
                     Properties.f += mg;
                 }
             }

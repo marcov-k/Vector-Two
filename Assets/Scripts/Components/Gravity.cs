@@ -3,6 +3,9 @@ using static Constants;
 
 public class Gravity : V2Component
 {
+    /// <summary>
+    /// Minimum squared radius of the body's field of influence
+    /// </summary>
     public float FieldRadius { get; protected set; }
     public float Gm { get; protected set; }
 
@@ -21,6 +24,6 @@ public class Gravity : V2Component
 
     void CalcFieldRadius()
     {
-        FieldRadius = Mathf.Sqrt(gravConst * Properties.m / minGravA);
+        FieldRadius = gravConst * Properties.m / minGravA;
     }
 }

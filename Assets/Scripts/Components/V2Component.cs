@@ -4,7 +4,7 @@ using static Constants;
 
 public class V2Component : MonoBehaviour
 {
-    public Properties Properties;
+    public Properties Properties { get; protected set; }
     protected IEnumerator PhysUpdateCoroutine;
     protected IEnumerator VisUpdateCoroutine;
 
@@ -55,9 +55,4 @@ public class V2Component : MonoBehaviour
     }
 
     protected virtual void VisUpdate() { }
-
-    public Properties GetProperties()
-    {
-        return Properties;
-    }
 }

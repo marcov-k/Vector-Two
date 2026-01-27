@@ -92,7 +92,7 @@ public class CollisionManager : MonoBehaviour
         // correct positions to resolve overlap
 
         float stab = 0.5f; // stabilize movement via gradual application of correction
-        float slop = 0.01f; // allow small overlap to prevent jitter
+        float slop = 0.3f; // allow small overlap to prevent jitter
         var correction = Mathf.Max(point.penetration - slop, 0.0f) / (massA + massB) * stab * n;
         a.Properties.pos -= massA * correction;
         b.Properties.pos += massB * correction;
