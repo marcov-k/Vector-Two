@@ -66,8 +66,11 @@ public class InputManager : MonoBehaviour
 
     public void OnZoom(InputAction.CallbackContext ctx)
     {
-        float input = ctx.ReadValue<float>();
-        float speed = boost ? zoomSpeed * zoomMult : zoomSpeed;
-        if (modifier || boost) followCam.Lens.OrthographicSize = Mathf.Max(minZoom, followCam.Lens.OrthographicSize - input * speed);
+        if (modifier || boost)
+        {
+            float input = ctx.ReadValue<float>();
+            float speed = boost ? zoomSpeed * zoomMult : zoomSpeed;
+            followCam.Lens.OrthographicSize = Mathf.Max(minZoom, followCam.Lens.OrthographicSize - input * speed);
+        }
     }
 }

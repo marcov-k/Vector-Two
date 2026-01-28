@@ -3,6 +3,7 @@ using System.Collections;
 using static Constants;
 using static V2Objects;
 using static VectorUtils;
+using static InputManager;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ public class CollisionManager : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(physTimestep);
-            CheckCollisions();
+            if (!Paused) CheckCollisions();
         }
     }
 
