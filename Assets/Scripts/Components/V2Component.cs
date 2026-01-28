@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using static Constants;
+using static InputManager;
 
 public class V2Component : MonoBehaviour
 {
@@ -38,7 +39,7 @@ public class V2Component : MonoBehaviour
     {
         while (true)
         {
-            PhysUpdate();
+            if (!Paused) PhysUpdate();
             yield return new WaitForSeconds(physTimestep);
         }
     }
@@ -49,7 +50,7 @@ public class V2Component : MonoBehaviour
     {
         while (true)
         {
-            VisUpdate();
+            if (!Paused) VisUpdate();
             yield return new WaitForSeconds(visTimestep);
         }
     }
