@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using static V2Objects;
 
 [RequireComponent(typeof(SpriteRenderer))]
@@ -7,6 +8,7 @@ public class V2Collider : V2Component
 {
     protected new SpriteRenderer renderer;
     public PhysObject physObject;
+    public float maxDim;
 
     protected override void InitObject()
     {
@@ -19,7 +21,10 @@ public class V2Collider : V2Component
     protected override void InitValues()
     {
         CalcMOI();
+        CalcMaxDim();
     }
 
-    protected virtual void CalcMOI() { }
+    protected virtual void CalcMOI() { throw new NotImplementedException(); }
+
+    protected virtual void CalcMaxDim() { throw new NotImplementedException(); }
 }

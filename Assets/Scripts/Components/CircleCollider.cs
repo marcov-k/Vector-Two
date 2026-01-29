@@ -14,4 +14,9 @@ public class CircleCollider : V2Collider
     {
         Properties.moi = 0.5f * Properties.m * Mathf.Pow(radius, 2.0f);
     }
+
+    protected override void CalcMaxDim()
+    {
+        maxDim = radius;
+    }
 }

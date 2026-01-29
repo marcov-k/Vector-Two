@@ -2,7 +2,13 @@ using UnityEngine;
 
 public class RectangleCollider : V2Collider
 {
+    /// <summary>
+    /// Half-width of the collider
+    /// </summary>
     public float w;
+    /// <summary>
+    /// Half-height of the collider
+    /// </summary>
     public float h;
 
     protected override void InitValues()
@@ -15,6 +21,11 @@ public class RectangleCollider : V2Collider
     protected override void CalcMOI()
     {
         Properties.moi = (1.0f / 12.0f) * Properties.m * (Mathf.Pow(2.0f * w, 2.0f) + Mathf.Pow(2.0f * h, 2.0f));
+    }
+
+    protected override void CalcMaxDim()
+    {
+        maxDim = Mathf.Sqrt(Mathf.Pow(w * 2.0f, 2.0f) + Mathf.Pow(h * 2.0f, 2.0f));
     }
 
     public (Vector2[] vertices, Vector2[] normals) GetVerticesAndNormals()

@@ -103,6 +103,11 @@ public class CollisionManager : MonoBehaviour
     {
         collisionInfo = new() { a = a, b = b };
 
+        float checkDist = 1.5f * (a.maxDim + b.maxDim);
+        float dist = (b.Properties.pos - a.Properties.pos).magnitude;
+
+        if (dist > checkDist) return false;
+
         if (a is CircleCollider && b is CircleCollider)
         {
             return CircCirc(a as CircleCollider, b as CircleCollider, out collisionInfo);

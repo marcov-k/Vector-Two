@@ -694,7 +694,7 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""394aa124-b6f2-4efd-98a8-7d35d62b97c9"",
-                    ""path"": ""<Keyboard>/h"",
+                    ""path"": ""<Keyboard>/f1"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",

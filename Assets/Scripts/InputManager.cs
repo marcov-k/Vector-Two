@@ -103,7 +103,7 @@ public class InputManager : MonoBehaviour
 
     public void OnHelp()
     {
-        if (Control()) help.SetActive(!help.activeSelf);
+        help.SetActive(!help.activeSelf);
     }
 
     bool Modifier()

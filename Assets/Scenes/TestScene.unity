@@ -255,7 +255,7 @@ MonoBehaviour:
   help: {fileID: 1939371628}
   helpTextPrefab: {fileID: 5020567309433878349, guid: ccaf045cd71f7704da292f212ba4c23a, type: 3}
   keybinds:
-  - Ctrl + H - Help
+  - F1 - Help
   - Ctrl + Q - Quit
   - P - Pause
   - Shift/Mouse Back + WASD - Move Camera
@@ -799,7 +799,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -0.00024414062}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1338770005
