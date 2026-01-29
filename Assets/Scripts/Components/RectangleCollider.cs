@@ -25,7 +25,7 @@ public class RectangleCollider : V2Collider
 
     protected override void CalcMaxDim()
     {
-        maxDim = Mathf.Sqrt(Mathf.Pow(w * 2.0f, 2.0f) + Mathf.Pow(h * 2.0f, 2.0f));
+        maxDim = Mathf.Sqrt(Mathf.Pow(w, 2.0f) + Mathf.Pow(h, 2.0f));
     }
 
     public (Vector2[] vertices, Vector2[] normals) GetVerticesAndNormals()
