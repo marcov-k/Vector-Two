@@ -86,20 +86,20 @@ public class PhysObject : V2Component
 
     void CalcVel()
     {
-        Properties.v += Properties.a * physTimestep;
-        Properties.v -= Properties.v * drag * physTimestep;
-        Properties.av += Properties.aa * physTimestep;
-        Properties.av -= Properties.av * drag * physTimestep;
+        Properties.v += Properties.a * physTimestep * simSpeed;
+        Properties.v -= Properties.v * drag * physTimestep * simSpeed;
+        Properties.av += Properties.aa * physTimestep * simSpeed;
+        Properties.av -= Properties.av * drag * physTimestep * simSpeed;
     }
 
     void CalcPos()
     {
-        Properties.pos += Properties.v * physTimestep;
+        Properties.pos += Properties.v * physTimestep * simSpeed;
     }
 
     void CalcRot()
     {
-        Properties.Rot += Properties.av * Mathf.Rad2Deg * physTimestep;
+        Properties.Rot += Properties.av * Mathf.Rad2Deg * physTimestep * simSpeed;
     }
 
     void CalcP()

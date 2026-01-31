@@ -7,11 +7,13 @@ using static InputManager;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 public class CollisionManager : MonoBehaviour
 {
+    const float EPS = 1E-5f;
+    const int solverIterations = 5;
     IEnumerator collisionCoroutine;
-    [SerializeField] GameObject markerPrefab;
 
     void Awake()
     {
@@ -30,16 +32,26 @@ public class CollisionManager : MonoBehaviour
 
     void CheckCollisions()
     {
+        ConcurrentBag<Collision> collisions = new();
+
         Parallel.For(0, colliders.Count, i =>
         {
             Parallel.For(i + 1, colliders.Count, j =>
             {
                 if (ObjectCollision(colliders[i], colliders[j], out var collision))
                 {
-                    ImpulseResolveCollision(collision);
+                    collisions.Add(collision);
                 }
             });
         });
+
+        for (int i = 0; i < solverIterations; i++)
+        {
+            foreach (var collision in collisions)
+            {
+                ImpulseResolveCollision(collision);
+            }
+        }
     }
 
     void ImpulseResolveCollision(Collision collisionInfo)
@@ -70,6 +82,7 @@ public class CollisionManager : MonoBehaviour
         var vRel = vContB - vContA;
 
         float vRelNorm = Vector2.Dot(vRel, n);
+
         float vRelTang = Vector2.Dot(vRel, t);
 
         float e = a.Properties.e * b.Properties.e;
@@ -94,9 +107,9 @@ public class CollisionManager : MonoBehaviour
 
         float stab = 0.5f; // stabilize movement via gradual application of correction
         float slop = 0.1f; // allow small overlap to prevent jitter
-        var correction = Mathf.Max(point.penetration - slop, 0.0f) / totalMass * stab * n;
-        a.Properties.pos -= massA * correction;
-        b.Properties.pos += massB * correction;
+        var correction = Mathf.Max(point.penetration - slop, 0.0f) * stab * n;
+        a.Properties.pos -= (massA / totalMass) * correction;
+        b.Properties.pos += (massB / totalMass) * correction;
     }
 
     bool ObjectCollision(V2Collider a, V2Collider b, out Collision collisionInfo)
@@ -206,26 +219,28 @@ public class CollisionManager : MonoBehaviour
         Vector2 normal = Vector2.zero;
         foreach (var axis in normA)
         {
-            overlap = CalcOverlap(axis, vertsA, vertsB);
-
-            if (overlap <= 0.0f) return false;
-            else if (overlap < minOverlap)
+            if (CheckOverlap(axis, vertsA, vertsB, out overlap))
             {
-                normal = axis;
-                minOverlap = overlap;
+                if (overlap < minOverlap)
+                {
+                    normal = axis;
+                    minOverlap = overlap;
+                }
             }
+            else return false;
         }
 
         foreach (var axis in normB)
         {
-            overlap = CalcOverlap(axis, vertsA, vertsB);
-
-            if (overlap <= 0.0f) return false;
-            else if (overlap < minOverlap)
+            if (CheckOverlap(axis, vertsA, vertsB, out overlap))
             {
-                normal = axis;
-                minOverlap = overlap;
+                if (overlap < minOverlap)
+                {
+                    normal = axis;
+                    minOverlap = overlap;
+                }
             }
+            else return false;
         }
 
         RectangleCollider refShape = a;
@@ -273,9 +288,10 @@ public class CollisionManager : MonoBehaviour
             incPoints = vertsB;
         }
 
+        var negNorm = -normal;
         for (int i = 0; i < incNorms.Length; i++)
         {
-            dot = Vector2.Dot(incNorms[i], normal);
+            dot = Vector2.Dot(incNorms[i], negNorm);
             if (dot > greatestDot)
             {
                 incEdgeInt = i;
@@ -287,37 +303,14 @@ public class CollisionManager : MonoBehaviour
         incVertices[0] = incPoints[incEdgeInt];
         incVertices[1] = (incEdgeInt < incPoints.Length - 1) ? incPoints[incEdgeInt + 1] : incPoints[0];
 
-        collisionInfo.a = refShape;
-        collisionInfo.b = incShape;
+        collisionInfo.a = incShape;
+        collisionInfo.b = refShape;
 
-        Vector2 refVector = (refVertices[1] - refVertices[0]).normalized;
+        var worldNormal = (collisionInfo.b.Properties.pos - collisionInfo.a.Properties.pos).normalized;
+        if (Vector2.Dot(normal, worldNormal) < 0.0f) normal *= -1.0f;
 
-        var posSideNormal = refVector;
-        float posSideOffset = Vector2.Dot(posSideNormal, refVertices[1]);
-
-        var negSideNormal = refVector * -1.0f;
-        float negSideOffset = Vector2.Dot(negSideNormal, refVertices[0]);
-
-        var clipped = Clip(incVertices.ToList(), normal, negSideOffset);
-        clipped = Clip(clipped, normal, posSideOffset);
-
-        var faceNormal = normal;
-        float faceOffset = Vector2.Dot(faceNormal, refVertices[0]);
-
-        List<Vector2> finalContacts = new();
-        List<float> depths = new();
-        float depth;
-        foreach (var point in clipped)
-        {
-            depth = Vector2.Dot(faceNormal, point) - faceOffset;
-            if (depth <= 0.0f)
-            {
-                finalContacts.Add(point);
-                depths.Add(depth);
-            }
-        }
-
-        var (contact, penetration) = GetSingleContact(finalContacts, depths);
+        var contact = GetContactPoint(refVertices, incVertices, normal);
+        float penetration = Mathf.Abs(minOverlap);
 
         Vector2 localA = contact - collisionInfo.a.Properties.pos;
         Vector2 localB = contact - collisionInfo.b.Properties.pos;
@@ -327,50 +320,65 @@ public class CollisionManager : MonoBehaviour
         return true;
     }
 
-    List<Vector2> Clip(List<Vector2> points, Vector2 normal, float offset)
+    Vector2 GetContactPoint(Vector2[] refVerts, Vector2[] incVerts, Vector2 normal)
     {
-        List<Vector2> clippedPoints = new();
+        var clipped = incVerts.ToList();
+        clipped = ClipPoints(clipped, normal, Vector2.Dot(normal, refVerts[0]));
 
-        float d1 = Vector2.Dot(points[0], normal) - offset;
-        float d2 = Vector2.Dot(points[1], normal) - offset;
+        var refDir = (refVerts[1] - refVerts[0]).normalized;
 
-        if (d1 <= 0.0f) clippedPoints.Add(points[0]);
-        if (d2 <= 0.0f) clippedPoints.Add(points[1]);
+        Vector2 sideNormal1 = new(-refDir.y, refDir.x);
+        float sideOffset1 = Vector2.Dot(sideNormal1, refVerts[0]) - EPS;
+        clipped = ClipPoints(clipped, sideNormal1, sideOffset1);
 
-        if (d1 * d2 < 0.0f)
+        var sideNormal2 = -sideNormal1;
+        float sideOffset2 = Vector2.Dot(sideNormal2, refVerts[1]) - EPS;
+        clipped = ClipPoints(clipped, sideNormal2, sideOffset2);
+
+        if (clipped.Count == 0)
         {
-            float alpha = d1 / (d1 - d2);
-            var intersect = points[0] + ((points[1] - points[0]) * alpha);
-            clippedPoints.Add(intersect);
+            return (incVerts[0] + incVerts[1]) * 0.5f;
         }
 
-        return clippedPoints;
+        var contact = Vector2.zero;
+        foreach (var point in clipped)
+        {
+            contact += point;
+        }
+        contact /= clipped.Count;
+        return contact;
     }
 
-    (Vector2 point, float penetration) GetSingleContact(List<Vector2> contacts, List<float> depths)
+    List<Vector2> ClipPoints(List<Vector2> points, Vector2 normal, float o)
     {
-        Vector2 deepestContact = contacts[0];
-        float maxDepth = depths[0];
-        for (int i = 1; i < contacts.Count; i++)
+        List<Vector2> output = new();
+
+        for (int i = 0; i < points.Count; i++)
         {
-            if (depths[i] > maxDepth)
+            var v = points[i];
+            float d = Vector2.Dot(v, normal) - o;
+            if (d >= -EPS) output.Add(v);
+            if (i == 0) continue;
+
+            float d0 = Vector2.Dot(points[i - 1], normal) - o;
+            if ((d < -EPS && d0 > EPS) || (d > EPS && d0 < -EPS))
             {
-                maxDepth = depths[i];
-                deepestContact = contacts[i];
+                var e = v - points[i - 1];
+                float u = -d0 / (d - d0);
+                output.Add(e * u + points[i - 1]);
             }
         }
-
-        return (deepestContact, maxDepth);
+        return output;
     }
 
-    float CalcOverlap(Vector2 axis, Vector2[] vertsA, Vector2[] vertsB)
+    bool CheckOverlap(Vector2 axis, Vector2[] vertsA, Vector2[] vertsB, out float overlap)
     {
         var intervalA = CalcInterval(axis, vertsA);
         var intervalB = CalcInterval(axis, vertsB);
 
-        float overlap = Mathf.Min(intervalA.y, intervalB.y) - Mathf.Max(intervalA.x, intervalB.x);
+        overlap = Mathf.Min(intervalA.y, intervalB.y) - Mathf.Max(intervalA.x, intervalB.x);
 
-        return overlap;
+        return intervalA.y >= intervalB.x && intervalB.y >= intervalA.x;
     }
 
     Vector2 CalcInterval(Vector2 axis, Vector2[] verts)

@@ -51,6 +51,7 @@ public class RectangleCollider : V2Collider
         Vector2 p2;
         for (int i = 0; i < vertices.Length; i++)
         {
+            vertices[i] += Properties.pos;
             p1 = vertices[i];
 
             if (i < vertices.Length - 1) p2 = vertices[i + 1];
