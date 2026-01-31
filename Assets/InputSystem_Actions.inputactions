@@ -97,7 +97,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Zoom",
+                    "name": "Scroll",
                     "type": "Value",
                     "id": "a7101c23-5217-4dc7-8d92-3b0a4a3aee8e",
                     "expectedControlType": "Axis",
@@ -136,6 +136,15 @@
                     "name": "Help",
                     "type": "Button",
                     "id": "14674718-827c-4bf3-809d-1ff35c2a172f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Alt",
+                    "type": "Button",
+                    "id": "d9502317-4f72-472b-b69c-e0b038a61fc0",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -535,7 +544,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Zoom",
+                    "action": "Scroll",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -546,7 +555,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Zoom",
+                    "action": "Scroll",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -557,7 +566,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Zoom",
+                    "action": "Scroll",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -613,6 +622,17 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Help",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2760159e-6571-4027-8bde-5628aac9e238",
+                    "path": "<Keyboard>/leftAlt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Alt",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

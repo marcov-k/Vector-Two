@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Cinemachine;
 using TMPro;
+using static Constants;
 
 public class InputManager : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class InputManager : MonoBehaviour
     Inputs inputs;
     [SerializeField] CinemachineCamera followCam;
     [SerializeField] Transform camPos;
+    [SerializeField] TextMeshProUGUI simSpeedText;
     [SerializeField] GameObject help;
     Transform helpTextCont;
     [SerializeField] TextMeshProUGUI helpTextPrefab;
@@ -18,6 +20,7 @@ public class InputManager : MonoBehaviour
     [SerializeField] float minZoom = 1.0f;
     [SerializeField] float moveSpeed = 1.0f;
     [SerializeField] float moveSpeedMult = 4.0f;
+    [SerializeField] float simSpeedStep = 0.1f;
 
     void Awake()
     {
@@ -43,13 +46,14 @@ public class InputManager : MonoBehaviour
     void InitInputs()
     {
         inputs.Player.Pause.performed += _ => OnPause();
-        inputs.Player.Zoom.performed += OnZoom;
+        inputs.Player.Scroll.performed += OnScroll;
         inputs.Player.Quit.performed += _ => OnQuit();
         inputs.Player.Help.performed += _ => OnHelp();
     }
 
     void InitHelp()
     {
+        UpdateSimSpeedText();
         helpTextCont = help.transform.GetChild(0).GetChild(0);
 
         foreach (Transform child in helpTextCont)
@@ -69,6 +73,12 @@ public class InputManager : MonoBehaviour
         Move();
     }
 
+    void UpdateSimSpeedText()
+    {
+        simSpeedText.text = $"{simSpeed:F2}x";
+        if (Paused) simSpeedText.text += " (P)";
+    }
+
     void Move()
     {
         bool boost = Boost();
@@ -83,17 +93,27 @@ public class InputManager : MonoBehaviour
     public void OnPause()
     {
         Paused = !Paused;
+        UpdateSimSpeedText();
     }
 
     public void OnZoom(InputAction.CallbackContext ctx)
     {
-        bool boost = Boost();
-        if (Modifier() || boost)
-        {
-            float input = ctx.ReadValue<float>();
-            float speed = boost ? zoomSpeed * zoomMult : zoomSpeed;
-            followCam.Lens.OrthographicSize = Mathf.Max(minZoom, followCam.Lens.OrthographicSize - input * speed);
-        }
+        float input = ctx.ReadValue<float>();
+        float speed = Boost() ? zoomSpeed * zoomMult : zoomSpeed;
+        followCam.Lens.OrthographicSize = Mathf.Max(minZoom, followCam.Lens.OrthographicSize - input * speed);
+    }
+
+    public void OnScroll(InputAction.CallbackContext ctx)
+    {
+        if (Modifier() || Boost()) OnZoom(ctx);
+        else if (Alt()) OnSimSpeed(ctx);
+    }
+
+    void OnSimSpeed(InputAction.CallbackContext ctx)
+    {
+        float input = ctx.ReadValue<float>();
+        simSpeed = Mathf.Max(simSpeed + simSpeedStep * input, 0.0f);
+        UpdateSimSpeedText();
     }
 
     public void OnQuit()
@@ -119,5 +139,10 @@ public class InputManager : MonoBehaviour
     bool Control()
     {
         return inputs.Player.Control.IsPressed();
+    }
+
+    bool Alt()
+    {
+        return inputs.Player.Alt.IsPressed();
     }
 }
