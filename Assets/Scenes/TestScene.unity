@@ -261,10 +261,13 @@ MonoBehaviour:
   - Ctrl + Q - Quit
   - P - Pause
   - Shift/Mouse Back + WASD - Move Camera
-  - Ctrl/Mouse Forward + WASD - Fast Move Camera
+  - Alt/Mouse Forward + WASD - Fast Move Camera
   - Shift/Mouse Back + Scroll - Zoom
-  - Ctrl/Mouse Forward + Scroll - Fast Zoom
-  - Alt + Scroll - Simulation Speed
+  - Alt/Mouse Forward + Scroll - Fast Zoom
+  - Ctrl + Scroll - Simulation Speed
+  - Ctrl + S - Save Current State
+  - Ctrl + L - Load a Saved State
+  - Ctrl + R - Reset to Last Saved State
   zoomSpeed: 20
   zoomMult: 4
   minZoom: 1
@@ -1469,7 +1472,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 3
+  m_ScrollSensitivity: 6
   m_Viewport: {fileID: 1700034192}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 186499619}

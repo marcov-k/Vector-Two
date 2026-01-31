@@ -49,6 +49,9 @@ public class InputManager : MonoBehaviour
         inputs.Player.Scroll.performed += OnScroll;
         inputs.Player.Quit.performed += _ => OnQuit();
         inputs.Player.Help.performed += _ => OnHelp();
+        inputs.Player.Save.performed += _ => OnSave();
+        inputs.Player.Load.performed += _ => OnLoad();
+        inputs.Player.Reset.performed += _ => OnReset();
     }
 
     void InitHelp()
@@ -96,6 +99,30 @@ public class InputManager : MonoBehaviour
         UpdateSimSpeedText();
     }
 
+    public void OnSave()
+    {
+        if (Ctrl())
+        {
+            // todo - add file namer and saver
+        }
+    }
+
+    public void OnLoad()
+    {
+        if (Ctrl())
+        {
+            // todo - add file explorer and loader
+        }
+    }
+
+    public void OnReset()
+    {
+        if (Ctrl())
+        {
+            // todo - add loading of last saved state
+        }
+    }
+
     public void OnZoom(InputAction.CallbackContext ctx)
     {
         float input = ctx.ReadValue<float>();
@@ -106,7 +133,7 @@ public class InputManager : MonoBehaviour
     public void OnScroll(InputAction.CallbackContext ctx)
     {
         if (Modifier() || Boost()) OnZoom(ctx);
-        else if (Alt()) OnSimSpeed(ctx);
+        else if (Ctrl()) OnSimSpeed(ctx);
     }
 
     void OnSimSpeed(InputAction.CallbackContext ctx)
@@ -118,7 +145,7 @@ public class InputManager : MonoBehaviour
 
     public void OnQuit()
     {
-        if (Control()) Application.Quit();
+        if (Ctrl()) Application.Quit();
     }
 
     public void OnHelp()
@@ -136,7 +163,7 @@ public class InputManager : MonoBehaviour
         return inputs.Player.Speed.IsPressed();
     }
 
-    bool Control()
+    bool Ctrl()
     {
         return inputs.Player.Control.IsPressed();
     }
