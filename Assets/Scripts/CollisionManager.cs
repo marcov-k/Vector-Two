@@ -4,6 +4,7 @@ using static Constants;
 using static V2Objects;
 using static VectorUtils;
 using static InputManager;
+using static Saver;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ public class CollisionManager : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(physTimestep);
-            if (!Paused) CheckCollisions();
+            if (!Paused && !Loading) CheckCollisions();
         }
     }
 
@@ -38,8 +39,9 @@ public class CollisionManager : MonoBehaviour
         {
             Parallel.For(i + 1, colliders.Count, j =>
             {
-                if (ObjectCollision(colliders[i], colliders[j], out var collision))
+                if (!Loading && ObjectCollision(colliders[i], colliders[j], out var collision))
                 {
+                    Debug.Log("Collision detected");
                     collisions.Add(collision);
                 }
             });

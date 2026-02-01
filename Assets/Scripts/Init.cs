@@ -9,10 +9,17 @@ public class Init : MonoBehaviour
     [SerializeField] float minimumGravity = 0.01f;
     [SerializeField] bool fakeDrag = false;
     [SerializeField] float dragDecay = 1.0f; // percent per second
+    [SerializeField] GameObject objectPrefab;
 
     void Awake()
     {
+        InitSaver();
         InitConstants();
+    }
+
+    void InitSaver()
+    {
+        Saver.objectPrefab = objectPrefab;
     }
 
     void InitConstants()

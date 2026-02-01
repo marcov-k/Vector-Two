@@ -1381,6 +1381,7 @@ MonoBehaviour:
   minimumGravity: 0.01
   fakeDrag: 0
   dragDecay: 2
+  objectPrefab: {fileID: 5182198075211990725, guid: 3a7e09443b0315b45a00e6b7301b4c1f, type: 3}
 --- !u!4 &1793108216
 Transform:
   m_ObjectHideFlags: 0

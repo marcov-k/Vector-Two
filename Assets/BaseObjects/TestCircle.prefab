@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 2936238334393507025}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -22.546833, y: 90.12267, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 10, y: 10, z: 10}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -102,10 +102,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d550054efae660a4a88368c31dc2fa4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Properties: {fileID: 0}
   Mass: 20
   RestitutionCoefficient: 1
   FrictionCoefficient: 1
+  gravIndex: -1
 --- !u!114 &-5275690597407185240
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,8 +118,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab9e5ee3c9157a84f9cc3a15b027a576, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Properties: {fileID: 0}
   physObject: {fileID: 0}
+  maxDim: 0
   radius: 0
 --- !u!114 &7133799345654255532
 MonoBehaviour:

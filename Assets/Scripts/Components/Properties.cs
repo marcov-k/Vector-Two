@@ -1,6 +1,4 @@
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class Properties : MonoBehaviour
 {
@@ -36,4 +34,22 @@ public class Properties : MonoBehaviour
         }
         return rot;
     }
+
+    public void SetData(ObjectData data)
+    {
+        pos = data.pos;
+        Rot = data.rot;
+        v = data.v;
+        av = data.av;
+        a = data.a;
+        aa = data.aa;
+        f = data.f;
+        t = data.t;
+        p = data.p;
+        ke = data.ke;
+        m = data.m;
+        e = data.e;
+        cof = data.cof;
+        moi = data.moi;
+    }    
 }

@@ -15,6 +15,7 @@ public class PhysObject : V2Component
     protected override void InitObject()
     {
         base.InitObject();
+        physObjects.Add(this);
         Properties.m = Mass;
         Properties.e = RestitutionCoefficient;
         Properties.cof = FrictionCoefficient;
@@ -45,13 +46,13 @@ public class PhysObject : V2Component
 
     void ResetForce()
     {
-        Properties.f = float2.zero;
+        Properties.f = Vector2.zero;
         Properties.t = 0.0f;
     }
 
     void ResetAccel()
     {
-        Properties.a = float2.zero;
+        Properties.a = Vector2.zero;
         Properties.aa = 0.0f;
     }
 
@@ -86,8 +87,8 @@ public class PhysObject : V2Component
 
     void CalcVel()
     {
-        Properties.v += Properties.a * physTimestep * simSpeed;
-        Properties.v -= Properties.v * drag * physTimestep * simSpeed;
+        Properties.v += physTimestep * simSpeed * Properties.a;
+        Properties.v -= drag * physTimestep * simSpeed * Properties.v;
         Properties.av += Properties.aa * physTimestep * simSpeed;
         Properties.av -= Properties.av * drag * physTimestep * simSpeed;
     }
@@ -127,5 +128,13 @@ public class PhysObject : V2Component
     public void AddAngularImpulse(float impulse)
     {
         Properties.av += impulse / Properties.moi;
+    }
+
+    public void SetData(ObjectData data)
+    {
+        Mass = data.m;
+        RestitutionCoefficient = data.e;
+        FrictionCoefficient = data.cof;
+        transform.SetPositionAndRotation(data.pos, Quaternion.Euler(0.0f, 0.0f, data.rot));
     }
 }

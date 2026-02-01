@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using Unity.Cinemachine;
 using TMPro;
 using static Constants;
+using static Saver;
 
 public class InputManager : MonoBehaviour
 {
@@ -104,6 +105,7 @@ public class InputManager : MonoBehaviour
         if (Ctrl())
         {
             // todo - add file namer and saver
+            SaveState("SaveTest");
         }
     }
 
@@ -112,6 +114,7 @@ public class InputManager : MonoBehaviour
         if (Ctrl())
         {
             // todo - add file explorer and loader
+            LoadState("SaveTest");
         }
     }
 
