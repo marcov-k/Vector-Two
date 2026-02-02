@@ -9,13 +9,15 @@ using static TextureUtils;
 
 public static class Saver
 {
+    public const string folderName = "SavedStates";
     public const string fileExtension = ".vec2";
     public static GameObject objectPrefab;
     public static bool Loading { get; private set; } = false;
 
     public static void SaveState(string fileName)
     {
-        fileName += fileExtension;
+        string filePath = Path.Combine(Application.dataPath, folderName, fileName + fileExtension);
+
         SaveData data = new();
         foreach (var physObj in physObjects)
         {
@@ -39,14 +41,15 @@ public static class Saver
             data.data.Add(objData);
         }
         string json = ToJson(data, true);
-        File.WriteAllText(fileName, json);
+        File.WriteAllText(filePath, json);
     }
 
     public static void LoadState(string fileName)
     {
         Loading = true;
-        fileName += fileExtension;
-        if (File.Exists(fileName))
+        string filePath = Path.Combine(Application.dataPath, folderName, fileName + fileExtension);
+
+        if (File.Exists(filePath))
         {
             // clear current state
 
@@ -54,7 +57,7 @@ public static class Saver
 
             // load state from file
 
-            string json = File.ReadAllText(fileName);
+            string json = File.ReadAllText(filePath);
             var data = FromJson<SaveData>(json);
 
             foreach (var objData in data.data)
@@ -84,6 +87,15 @@ public static class Saver
             }
         }
         Loading = false;
+    }
+
+    public static void InitSaveDirectory()
+    {
+        string dirPath = Path.Combine(Application.dataPath, folderName);
+        if (!Directory.Exists(dirPath))
+        {
+            Directory.CreateDirectory(dirPath);
+        }
     }
 }
 

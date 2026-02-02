@@ -1,5 +1,6 @@
 using UnityEngine;
 using static Constants;
+using static Saver;
 
 public class Init : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class Init : MonoBehaviour
     void InitSaver()
     {
         Saver.objectPrefab = objectPrefab;
+        InitSaveDirectory();
     }
 
     void InitConstants()

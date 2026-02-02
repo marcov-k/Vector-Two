@@ -7,7 +7,7 @@ using static Saver;
 
 public class InputManager : MonoBehaviour
 {
-    public static bool Paused { get; private set; } = false;
+    public static bool Paused { get; private set; } = true;
     Inputs inputs;
     [SerializeField] CinemachineCamera followCam;
     [SerializeField] Transform camPos;
@@ -115,6 +115,8 @@ public class InputManager : MonoBehaviour
         {
             // todo - add file explorer and loader
             LoadState("SaveTest");
+            Paused = true;
+            UpdateSimSpeedText();
         }
     }
 
@@ -123,6 +125,8 @@ public class InputManager : MonoBehaviour
         if (Ctrl())
         {
             // todo - add loading of last saved state
+            Paused = true;
+            UpdateSimSpeedText();
         }
     }
 
