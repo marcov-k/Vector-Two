@@ -24,7 +24,11 @@ public static class Saver
                 a = props.a, aa = props.aa, f = props.f, t = props.t, p = props.p, ke = props.ke, m = props.m,
                 e = props.e, cof = props.cof, moi = props.moi };
 
-            objData.spriteData = FromSprite(physObj.gameObject.GetComponent<SpriteRenderer>().sprite);
+            var renderer = physObj.GetComponent<SpriteRenderer>();
+
+            objData.spriteData = FromSprite(renderer.sprite);
+
+            objData.rendererData = new() { color = renderer.color, flipX = renderer.flipX, flipY = renderer.flipY, sortingID = renderer.sortingLayerID, sortingOrder = renderer.sortingOrder };
 
             objData.components.Add(props.GetType().Name);
             foreach (var comp in physObj.gameObject.GetComponents<V2Component>())
@@ -59,7 +63,13 @@ public static class Saver
 
                 obj.name = objData.name;
                 obj.transform.localScale = objData.scale;
-                obj.GetComponent<SpriteRenderer>().sprite = objData.spriteData.ToSprite();
+
+                var renderer = obj.GetComponent<SpriteRenderer>();
+                
+                renderer.sprite = objData.spriteData.ToSprite();
+                renderer.color = objData.rendererData.color;
+                (renderer.flipX, renderer.flipY) = (objData.rendererData.flipX, objData.rendererData.flipY);
+                (renderer.sortingLayerID, renderer.sortingOrder) = (objData.rendererData.sortingID, objData.rendererData.sortingOrder);
 
                 foreach (string compName in objData.components)
                 {
@@ -88,6 +98,7 @@ public class ObjectData
 {
     public string name;
     public SpriteData spriteData;
+    public RendererData rendererData;
     public Vector3 scale;
     public List<string> components = new();
     public Vector2 pos, v, a, f, p;
@@ -103,8 +114,9 @@ public class ObjectData
 public class SpriteData
 {
     public string name;
-    public float xMin, xMax, yMin, yMax;
+    public Rect rect;
     public Vector2 pivot;
+    public float ppu;
     public byte[] textureData;
 
     public static SpriteData FromSprite(Sprite sprite)
@@ -112,11 +124,9 @@ public class SpriteData
         SpriteData data = new()
         {
             name = sprite.name,
-            xMin = sprite.rect.xMin,
-            xMax = sprite.rect.xMax,
-            yMin = sprite.rect.yMin,
-            yMax = sprite.rect.yMax,
-            pivot = sprite.pivot,
+            rect = sprite.rect,
+            pivot = new(sprite.pivot.x / sprite.rect.width, sprite.pivot.y / sprite.rect.height),
+            ppu = sprite.pixelsPerUnit
         };
 
         var readableTex = MakeReadable(sprite.texture);
@@ -127,28 +137,31 @@ public class SpriteData
 
     public Sprite ToSprite()
     {
-        Texture2D texture = new(2, 2);
+        Texture2D texture = new(1, 1);
         texture.LoadImage(textureData);
 
-        Rect rect = new(xMin, yMin, xMax, yMax);
-
-        var sprite = Sprite.Create(texture, rect, pivot);
+        var sprite = Sprite.Create(texture, rect, pivot, ppu);
         sprite.name = name;
         return sprite;
     }
 
     public static Sprite ToSprite(SpriteData data)
     {
-        Texture2D texture = new(2, 2);
+        Texture2D texture = new(1, 1);
         texture.LoadImage(data.textureData);
 
-        Rect rect = new(data.xMin, data.yMin, data.xMax, data.yMax);
-        var pivot = data.pivot;
-
-        var sprite = Sprite.Create(texture, rect, pivot);
+        var sprite = Sprite.Create(texture, data.rect, data.pivot, data.ppu);
         sprite.name = data.name;
         return sprite;
     }
+}
+
+[Serializable]
+public class RendererData
+{
+    public Color color;
+    public bool flipX, flipY;
+    public int sortingID, sortingOrder;
 }
 
 public static class TextureUtils
@@ -163,7 +176,7 @@ public static class TextureUtils
         RenderTexture previous = RenderTexture.active;
         RenderTexture.active = renderTex;
 
-        Texture2D readable = new Texture2D(source.width, source.height);
+        Texture2D readable = new(source.width, source.height);
         readable.ReadPixels(new Rect(0, 0, renderTex.width, renderTex.height), 0, 0);
         readable.Apply();
 

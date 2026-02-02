@@ -35,13 +35,22 @@ public class CollisionManager : MonoBehaviour
     {
         ConcurrentBag<Collision> collisions = new();
 
-        Parallel.For(0, colliders.Count, i =>
+        Parallel.For(0, colliders.Count, (i, loopState) =>
         {
-            Parallel.For(i + 1, colliders.Count, j =>
+            if (Loading)
             {
-                if (!Loading && ObjectCollision(colliders[i], colliders[j], out var collision))
+                loopState.Stop();
+                return;
+            }
+            Parallel.For(i + 1, colliders.Count, (j, loopState) =>
+            {
+                if (Loading)
                 {
-                    Debug.Log("Collision detected");
+                    loopState.Stop();
+                    return;
+                }
+                if (ObjectCollision(colliders[i], colliders[j], out var collision))
+                {
                     collisions.Add(collision);
                 }
             });
@@ -49,8 +58,10 @@ public class CollisionManager : MonoBehaviour
 
         for (int i = 0; i < solverIterations; i++)
         {
+            if (Loading) break;
             foreach (var collision in collisions)
             {
+                if (Loading) break;
                 ImpulseResolveCollision(collision);
             }
         }
