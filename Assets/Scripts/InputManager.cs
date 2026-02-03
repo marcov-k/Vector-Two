@@ -51,7 +51,7 @@ public class InputManager : MonoBehaviour
     {
         inputs.Player.Pause.performed += _ => { if (!FilesOpen) OnPause(); };
         inputs.Player.Scroll.performed += ctx => { if (!FilesOpen) OnScroll(ctx); };
-        inputs.Player.Quit.performed += _ => { if (!FilesOpen) OnQuit(); };
+        inputs.Player.Quit.performed += _ => OnQuit();
         inputs.Player.Help.performed += _ => { if (!FilesOpen) OnHelp(); };
         inputs.Player.Reset.performed += _ => { if (!FilesOpen) OnReset(); };
         inputs.Player.FileView.performed += _ => OnFileView();
