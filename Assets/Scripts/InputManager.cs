@@ -4,6 +4,7 @@ using Unity.Cinemachine;
 using TMPro;
 using static Constants;
 using static Saver;
+using static FileManager;
 
 public class InputManager : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class InputManager : MonoBehaviour
     [SerializeField] GameObject help;
     Transform helpTextCont;
     [SerializeField] TextMeshProUGUI helpTextPrefab;
+    FileManager fileManager;
     [SerializeField] string[] keybinds;
     [SerializeField] float zoomSpeed = 1.0f;
     [SerializeField] float zoomMult = 4.0f;
@@ -26,6 +28,7 @@ public class InputManager : MonoBehaviour
     void Awake()
     {
         inputs = new();
+        fileManager = FindFirstObjectByType<FileManager>();
     }
 
     void OnEnable()
@@ -46,13 +49,13 @@ public class InputManager : MonoBehaviour
 
     void InitInputs()
     {
-        inputs.Player.Pause.performed += _ => OnPause();
-        inputs.Player.Scroll.performed += OnScroll;
-        inputs.Player.Quit.performed += _ => OnQuit();
-        inputs.Player.Help.performed += _ => OnHelp();
-        inputs.Player.Save.performed += _ => OnSave();
-        inputs.Player.Load.performed += _ => OnLoad();
-        inputs.Player.Reset.performed += _ => OnReset();
+        inputs.Player.Pause.performed += _ => { if (!FilesOpen) OnPause(); };
+        inputs.Player.Scroll.performed += ctx => { if (!FilesOpen) OnZoom(ctx); };
+        inputs.Player.Quit.performed += _ => { if (!FilesOpen) OnQuit(); };
+        inputs.Player.Help.performed += _ => { if (!FilesOpen) OnHelp(); };
+        inputs.Player.Save.performed += _ => { if (!FilesOpen) OnSave(); };
+        inputs.Player.Load.performed += _ => { if (!FilesOpen) OnLoad(); };
+        inputs.Player.Reset.performed += _ => { if (!FilesOpen) OnReset(); };
     }
 
     void InitHelp()
@@ -74,7 +77,7 @@ public class InputManager : MonoBehaviour
 
     void Update()
     {
-        Move();
+        if (!FilesOpen) Move();
     }
 
     void UpdateSimSpeedText()
@@ -104,8 +107,9 @@ public class InputManager : MonoBehaviour
     {
         if (Ctrl())
         {
-            // todo - add file namer and saver
-            SaveState("SaveTest");
+            Paused = true;
+            UpdateSimSpeedText();
+            fileManager.OpenSaveView();
         }
     }
 
@@ -113,10 +117,9 @@ public class InputManager : MonoBehaviour
     {
         if (Ctrl())
         {
-            // todo - add file explorer and loader
-            LoadState("SaveTest");
             Paused = true;
             UpdateSimSpeedText();
+            fileManager.OpenLoadView();
         }
     }
 
@@ -124,9 +127,9 @@ public class InputManager : MonoBehaviour
     {
         if (Ctrl())
         {
-            // todo - add loading of last saved state
             Paused = true;
             UpdateSimSpeedText();
+            ResetState();
         }
     }
 

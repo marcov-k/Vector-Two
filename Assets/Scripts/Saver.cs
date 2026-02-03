@@ -13,6 +13,7 @@ public static class Saver
     public const string fileExtension = ".vec2";
     public static GameObject objectPrefab;
     public static bool Loading { get; private set; } = false;
+    static string lastSave;
 
     public static void SaveState(string fileName)
     {
@@ -40,8 +41,11 @@ public static class Saver
 
             data.data.Add(objData);
         }
+
         string json = ToJson(data, true);
         File.WriteAllText(filePath, json);
+
+        lastSave = fileName;
     }
 
     public static void LoadState(string fileName)
@@ -96,6 +100,11 @@ public static class Saver
         {
             Directory.CreateDirectory(dirPath);
         }
+    }
+
+    public static void ResetState()
+    {
+        LoadState(lastSave);
     }
 }
 
