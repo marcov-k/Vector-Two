@@ -96,6 +96,7 @@ public static class Saver
             success = true;
         }
 
+        lastSave = fileName;
         Loading = false;
         return success;
     }

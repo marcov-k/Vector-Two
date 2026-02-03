@@ -6,12 +6,12 @@ using System;
 using System.Linq;
 using TMPro;
 using static Saver;
-using NUnit.Framework.Constraints;
 
 public class FileManager : MonoBehaviour
 {
     const string pathRegexString = @"^.+\.vec2$";
     public static bool FilesOpen { get; private set; } = false;
+    static bool selectStart = false;
     [SerializeField] GameObject background;
     [SerializeField] Transform fileHolder;
     [SerializeField] GameObject fileBoxPrefab;
@@ -38,9 +38,15 @@ public class FileManager : MonoBehaviour
     void Awake()
     {
         warning = FindFirstObjectByType<Warning>();
-        InitSortIcons();
-        background.SetActive(false);
         UpdateFiles();
+    }
+
+    void Start()
+    {
+        InitSortIcons();
+        UpdateFileView();
+        (FilesOpen, selectStart) = (true, true);
+        background.SetActive(true);
     }
 
     void InitSortIcons()
@@ -250,7 +256,11 @@ public class FileManager : MonoBehaviour
         {
             warning.ShowWarning($"Could not load file \"{((nameInput.text != string.Empty) ? nameInput.text : " ")}\"");
         }
-        else ToggleViewer();
+        else
+        {
+            selectStart = false;
+            ToggleViewer();
+        }
     }
 
     public void FileSelected(FileBox box)
@@ -278,12 +288,19 @@ public class FileManager : MonoBehaviour
 
     public void ToggleViewer()
     {
-        FilesOpen = !FilesOpen;
-        background.SetActive(FilesOpen);
-        if (FilesOpen)
+        if (!selectStart)
         {
-            UpdateFileView();
-            UpdateSortIcons();
+            FilesOpen = !FilesOpen;
+            background.SetActive(FilesOpen);
+            if (FilesOpen)
+            {
+                UpdateFileView();
+                UpdateSortIcons();
+            }
+        }
+        else
+        {
+            warning.ShowWarning($"Please select and load an existing file or save and load a new file");
         }
     }
 
