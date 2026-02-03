@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using TMPro;
 using static Saver;
+using NUnit.Framework.Constraints;
 
 public class FileManager : MonoBehaviour
 {
@@ -16,6 +17,10 @@ public class FileManager : MonoBehaviour
     [SerializeField] GameObject fileBoxPrefab;
     [SerializeField] TMP_InputField searchInput;
     [SerializeField] TMP_InputField nameInput;
+    /// <summary>
+    /// Sorting icons in the order: name, time, size
+    /// </summary>
+    [SerializeField] SortIcon[] sortIcons;
     Warning warning;
     string search = string.Empty;
     string enteredName = string.Empty;
@@ -24,12 +29,27 @@ public class FileManager : MonoBehaviour
     readonly List<FileBox> shownBoxes = new();
     FileBox selectedBox;
     string selectedFile;
+    /// <summary>
+    /// File sorting mode: 0 = name, 1 = time, 2 = size
+    /// </summary>
+    uint sortMode = 1;
+    bool reverseSort = false;
 
     void Awake()
     {
         warning = FindFirstObjectByType<Warning>();
+        InitSortIcons();
         background.SetActive(false);
         InitFiles();
+    }
+
+    void InitSortIcons()
+    {
+        for (uint i = 0; i < sortIcons.Length; i++)
+        {
+            sortIcons[i].id = i;
+            sortIcons[i].SetSortMode(sortMode);
+        }
     }
 
     void InitFiles()
@@ -47,15 +67,16 @@ public class FileManager : MonoBehaviour
                 FileInfo fileInfo = new(filePath);
 
                 string name = Path.GetFileNameWithoutExtension(filePath);
-                DateTime time = fileInfo.LastAccessTime;
-                string size = FileSizeToString(fileInfo.Length);
+                DateTime time = fileInfo.LastWriteTime;
+                long byteSize = fileInfo.Length;
+                string size = FileSizeToString(byteSize);
 
-                SaveFile file = new() { path = filePath, name = name, time = time, size = size };
+                SaveFile file = new() { path = filePath, name = name, time = time, size = size, byteSize = byteSize };
 
                 files.Add(file);
             }
         }
-        allFiles.AddRange(SortFiles(files));
+        allFiles.AddRange(SortFiles(files, sortMode, reverseSort));
     }
 
     /// <summary>
@@ -63,7 +84,7 @@ public class FileManager : MonoBehaviour
     /// </summary>
     /// <param name="files">SaveFile list to be sorted.</param>
     /// <returns>SaveFile list sorted by time modified.</returns>
-    List<SaveFile> SortFiles(List<SaveFile> files)
+    List<SaveFile> SortFiles(List<SaveFile> files, uint mode, bool reverse)
     {
         var sortedFiles = new SaveFile[files.Count];
 
@@ -77,7 +98,7 @@ public class FileManager : MonoBehaviour
             {
                 file = files[i];
                 checkIndex = i;
-                while (checkIndex > 0 && sortedFiles[checkIndex - 1].time < file.time)
+                while (checkIndex > 0 && CompareFiles(sortedFiles[checkIndex - 1], file, mode, reverse))
                 {
                     checkIndex--;
                     sortedFiles[checkIndex + 1] = sortedFiles[checkIndex];
@@ -89,9 +110,36 @@ public class FileManager : MonoBehaviour
         return sortedFiles.ToList();
     }
 
+    /// <summary>
+    /// Compares 2 SaveFiles using the specified mode.
+    /// </summary>
+    /// <param name="a">First SaveFile to be compared.</param>
+    /// <param name="b">Second SaveFile to be compared.</param>
+    /// <param name="mode">The comparison mode to be used.</param>
+    /// <param name="reverse">Whether to reverse the comparison.</param>
+    /// <returns>Whether A comes before B (when not reversed).</returns>
+    bool CompareFiles(SaveFile a, SaveFile b, uint mode, bool reverse)
+    {
+        bool output = false;
+        switch(mode)
+        {
+            case 0: // compare using name
+                output = string.Compare(a.name, b.name) == 1;
+                break;
+            case 1: // compare using time
+                output = a.time < b.time;
+                break;
+            case 2: // compare using size
+                output = a.byteSize < b.byteSize;
+                break;
+        }
+        return (reverse) ? !output : output;
+    }
+
     void UpdateFileView()
     {
         ClearFileView();
+        InitFiles();
 
         foreach (var file in allFiles)
         {
@@ -118,6 +166,14 @@ public class FileManager : MonoBehaviour
         foreach (Transform fileBox in fileHolder)
         {
             Destroy(fileBox.gameObject);
+        }
+    }
+
+    void UpdateSortIcons()
+    {
+        foreach (var icon in sortIcons)
+        {
+            if (icon.id != sortMode) icon.SetSortMode(sortMode);
         }
     }
 
@@ -222,7 +278,19 @@ public class FileManager : MonoBehaviour
     {
         FilesOpen = !FilesOpen;
         background.SetActive(FilesOpen);
-        if (FilesOpen) UpdateFileView();
+        if (FilesOpen)
+        {
+            UpdateFileView();
+            UpdateSortIcons();
+        }
+    }
+
+    public void SortModeChanged(uint mode, bool reversed)
+    {
+        sortMode = mode;
+        reverseSort = reversed;
+        UpdateSortIcons();
+        UpdateFileView();
     }
 }
 
@@ -232,4 +300,5 @@ public struct SaveFile
     public string name;
     public DateTime time;
     public string size;
+    public long byteSize;
 }
