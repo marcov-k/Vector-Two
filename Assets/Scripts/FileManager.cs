@@ -17,18 +17,6 @@ public class FileManager : MonoBehaviour
     [SerializeField] TMP_InputField searchInput;
     [SerializeField] TMP_InputField nameInput;
     Warning warning;
-    string Search
-    {
-        get
-        {
-            return search;
-        }
-        set
-        {
-            search = value;
-            UpdateFileView();
-        }
-    }
     string search = string.Empty;
     string enteredName = string.Empty;
     readonly List<SaveFile> allFiles = new();
@@ -107,7 +95,7 @@ public class FileManager : MonoBehaviour
 
         foreach (var file in allFiles)
         {
-            if (Search == string.Empty || file.name.Contains(Search))
+            if (search == string.Empty || file.name.Contains(search))
             {
                 var fileBoxObj = Instantiate(fileBoxPrefab, fileHolder);
                 var fileBox = fileBoxObj.GetComponent<FileBox>();
@@ -147,7 +135,7 @@ public class FileManager : MonoBehaviour
 
     public void SearchChanged()
     {
-        Search = searchInput.text;
+        search = searchInput.text;
         UpdateFileView();
     }
 
