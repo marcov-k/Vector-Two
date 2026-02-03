@@ -50,12 +50,11 @@ public class InputManager : MonoBehaviour
     void InitInputs()
     {
         inputs.Player.Pause.performed += _ => { if (!FilesOpen) OnPause(); };
-        inputs.Player.Scroll.performed += ctx => { if (!FilesOpen) OnZoom(ctx); };
+        inputs.Player.Scroll.performed += ctx => { if (!FilesOpen) OnScroll(ctx); };
         inputs.Player.Quit.performed += _ => { if (!FilesOpen) OnQuit(); };
         inputs.Player.Help.performed += _ => { if (!FilesOpen) OnHelp(); };
-        inputs.Player.Save.performed += _ => { if (!FilesOpen) OnSave(); };
-        inputs.Player.Load.performed += _ => { if (!FilesOpen) OnLoad(); };
         inputs.Player.Reset.performed += _ => { if (!FilesOpen) OnReset(); };
+        inputs.Player.FileView.performed += _ => OnFileView();
     }
 
     void InitHelp()
@@ -103,23 +102,13 @@ public class InputManager : MonoBehaviour
         UpdateSimSpeedText();
     }
 
-    public void OnSave()
+    public void OnFileView()
     {
         if (Ctrl())
         {
             Paused = true;
             UpdateSimSpeedText();
-            fileManager.OpenSaveView();
-        }
-    }
-
-    public void OnLoad()
-    {
-        if (Ctrl())
-        {
-            Paused = true;
-            UpdateSimSpeedText();
-            fileManager.OpenLoadView();
+            fileManager.ToggleViewer();
         }
     }
 

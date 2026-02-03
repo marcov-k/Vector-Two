@@ -237,27 +237,18 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Save"",
-                    ""type"": ""Button"",
-                    ""id"": ""dabb3150-6b97-4a76-9d21-dda0a2c9fd6f"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Load"",
-                    ""type"": ""Button"",
-                    ""id"": ""a5dffdcf-fb7a-4c49-b8c7-587218116daa"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Reset"",
                     ""type"": ""Button"",
                     ""id"": ""a0061b44-f916-4991-a1c0-19fabcd6ed9d"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""FileView"",
+                    ""type"": ""Button"",
+                    ""id"": ""01d9187d-29af-4dce-b2df-9f484a1e039f"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -751,34 +742,23 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""e9749149-2a95-49f9-b919-6a47eb2ea2cf"",
-                    ""path"": ""<Keyboard>/s"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Save"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""b940da23-be73-4426-a5e5-0a0dfcbd6721"",
-                    ""path"": ""<Keyboard>/l"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Load"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""8507a830-3519-45b5-8778-c87541f894c4"",
                     ""path"": ""<Keyboard>/r"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Reset"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""51817277-c8d5-4c9f-a02a-8a2587758205"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""FileView"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1382,9 +1362,8 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         m_Player_Quit = m_Player.FindAction("Quit", throwIfNotFound: true);
         m_Player_Help = m_Player.FindAction("Help", throwIfNotFound: true);
         m_Player_Alt = m_Player.FindAction("Alt", throwIfNotFound: true);
-        m_Player_Save = m_Player.FindAction("Save", throwIfNotFound: true);
-        m_Player_Load = m_Player.FindAction("Load", throwIfNotFound: true);
         m_Player_Reset = m_Player.FindAction("Reset", throwIfNotFound: true);
+        m_Player_FileView = m_Player.FindAction("FileView", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1494,9 +1473,8 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Quit;
     private readonly InputAction m_Player_Help;
     private readonly InputAction m_Player_Alt;
-    private readonly InputAction m_Player_Save;
-    private readonly InputAction m_Player_Load;
     private readonly InputAction m_Player_Reset;
+    private readonly InputAction m_Player_FileView;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1573,17 +1551,13 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Alt => m_Wrapper.m_Player_Alt;
         /// <summary>
-        /// Provides access to the underlying input action "Player/Save".
-        /// </summary>
-        public InputAction @Save => m_Wrapper.m_Player_Save;
-        /// <summary>
-        /// Provides access to the underlying input action "Player/Load".
-        /// </summary>
-        public InputAction @Load => m_Wrapper.m_Player_Load;
-        /// <summary>
         /// Provides access to the underlying input action "Player/Reset".
         /// </summary>
         public InputAction @Reset => m_Wrapper.m_Player_Reset;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/FileView".
+        /// </summary>
+        public InputAction @FileView => m_Wrapper.m_Player_FileView;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1658,15 +1632,12 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @Alt.started += instance.OnAlt;
             @Alt.performed += instance.OnAlt;
             @Alt.canceled += instance.OnAlt;
-            @Save.started += instance.OnSave;
-            @Save.performed += instance.OnSave;
-            @Save.canceled += instance.OnSave;
-            @Load.started += instance.OnLoad;
-            @Load.performed += instance.OnLoad;
-            @Load.canceled += instance.OnLoad;
             @Reset.started += instance.OnReset;
             @Reset.performed += instance.OnReset;
             @Reset.canceled += instance.OnReset;
+            @FileView.started += instance.OnFileView;
+            @FileView.performed += instance.OnFileView;
+            @FileView.canceled += instance.OnFileView;
         }
 
         /// <summary>
@@ -1726,15 +1697,12 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @Alt.started -= instance.OnAlt;
             @Alt.performed -= instance.OnAlt;
             @Alt.canceled -= instance.OnAlt;
-            @Save.started -= instance.OnSave;
-            @Save.performed -= instance.OnSave;
-            @Save.canceled -= instance.OnSave;
-            @Load.started -= instance.OnLoad;
-            @Load.performed -= instance.OnLoad;
-            @Load.canceled -= instance.OnLoad;
             @Reset.started -= instance.OnReset;
             @Reset.performed -= instance.OnReset;
             @Reset.canceled -= instance.OnReset;
+            @FileView.started -= instance.OnFileView;
+            @FileView.performed -= instance.OnFileView;
+            @FileView.canceled -= instance.OnFileView;
         }
 
         /// <summary>
@@ -2148,26 +2116,19 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnAlt(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Save" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnSave(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "Load" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnLoad(InputAction.CallbackContext context);
-        /// <summary>
         /// Method invoked when associated input action "Reset" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnReset(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "FileView" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnFileView(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

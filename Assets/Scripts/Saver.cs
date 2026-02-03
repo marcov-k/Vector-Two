@@ -15,8 +15,10 @@ public static class Saver
     public static bool Loading { get; private set; } = false;
     static string lastSave;
 
-    public static void SaveState(string fileName)
+    public static bool SaveState(string fileName)
     {
+        if (fileName == string.Empty) return false;
+
         string filePath = Path.Combine(Application.dataPath, folderName, fileName + fileExtension);
 
         SaveData data = new();
@@ -46,10 +48,12 @@ public static class Saver
         File.WriteAllText(filePath, json);
 
         lastSave = fileName;
+        return true;
     }
 
-    public static void LoadState(string fileName)
+    public static bool LoadState(string fileName)
     {
+        bool success = false;
         Loading = true;
         string filePath = Path.Combine(Application.dataPath, folderName, fileName + fileExtension);
 
@@ -72,7 +76,7 @@ public static class Saver
                 obj.transform.localScale = objData.scale;
 
                 var renderer = obj.GetComponent<SpriteRenderer>();
-                
+
                 renderer.sprite = objData.spriteData.ToSprite();
                 renderer.color = objData.rendererData.color;
                 (renderer.flipX, renderer.flipY) = (objData.rendererData.flipX, objData.rendererData.flipY);
@@ -89,8 +93,22 @@ public static class Saver
                 var props = obj.GetComponent<Properties>();
                 props.SetData(objData);
             }
+            success = true;
         }
+
         Loading = false;
+        return success;
+    }
+
+    public static bool DeleteState(string fileName)
+    {
+        string filePath = Path.Combine(Application.dataPath, folderName, fileName + fileExtension);
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+            return true;
+        }
+        else return false;
     }
 
     public static void InitSaveDirectory()

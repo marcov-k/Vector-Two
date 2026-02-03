@@ -16,6 +16,7 @@ public class FileManager : MonoBehaviour
     [SerializeField] GameObject fileBoxPrefab;
     [SerializeField] TMP_InputField searchInput;
     [SerializeField] TMP_InputField nameInput;
+    Warning warning;
     string Search
     {
         get
@@ -32,9 +33,13 @@ public class FileManager : MonoBehaviour
     string enteredName = string.Empty;
     readonly List<SaveFile> allFiles = new();
     readonly string[] sizeUnits = new string[] { "B", "KB", "MB", "GB" };
+    readonly List<FileBox> shownBoxes = new();
+    FileBox selectedBox;
+    string selectedFile;
 
     void Awake()
     {
+        warning = FindFirstObjectByType<Warning>();
         background.SetActive(false);
         InitFiles();
     }
@@ -45,7 +50,6 @@ public class FileManager : MonoBehaviour
 
         string dirPath = Path.Combine(Application.dataPath, folderName);
         string[] filePaths = Directory.GetFiles(dirPath);
-
         Regex pathRegex = new(pathRegexString);
         List<SaveFile> files = new();
         foreach (string filePath in filePaths)
@@ -74,38 +78,27 @@ public class FileManager : MonoBehaviour
     List<SaveFile> SortFiles(List<SaveFile> files)
     {
         var sortedFiles = new SaveFile[files.Count];
-        sortedFiles[0] = files[0];
 
-        SaveFile file;
-        int checkIndex;
-        for (int i = 1; i < files.Count; i++)
+        if (files.Count > 0)
         {
-            file = files[i];
-            checkIndex = i - 1;
-            while (checkIndex >= 0 && sortedFiles[checkIndex].time > file.time)
+            sortedFiles[0] = files[0];
+
+            SaveFile file;
+            int checkIndex;
+            for (int i = 1; i < files.Count; i++)
             {
-                sortedFiles[checkIndex + 1] = sortedFiles[checkIndex];
-                if (checkIndex == 0) break;
-                checkIndex--;
+                file = files[i];
+                checkIndex = i;
+                while (checkIndex > 0 && sortedFiles[checkIndex - 1].time < file.time)
+                {
+                    checkIndex--;
+                    sortedFiles[checkIndex + 1] = sortedFiles[checkIndex];
+                }
+                sortedFiles[checkIndex] = file;
             }
-            sortedFiles[checkIndex] = file;
         }
 
         return sortedFiles.ToList();
-    }
-
-    public void OpenSaveView()
-    {
-        FilesOpen = true;
-        background.SetActive(true);
-        UpdateFileView();
-    }
-
-    public void OpenLoadView()
-    {
-        FilesOpen = true;
-        background.SetActive(true);
-        UpdateFileView();
     }
 
     void UpdateFileView()
@@ -119,12 +112,21 @@ public class FileManager : MonoBehaviour
                 var fileBoxObj = Instantiate(fileBoxPrefab, fileHolder);
                 var fileBox = fileBoxObj.GetComponent<FileBox>();
                 fileBox.SetData(file);
+                shownBoxes.Add(fileBox);
+
+                if (file.name == selectedFile)
+                {
+                    selectedBox = fileBox;
+                    UpdateBoxHighlight();
+                }
             }
         }
     }
 
     void ClearFileView()
     {
+        shownBoxes.Clear();
+        selectedBox = null;
         foreach (Transform fileBox in fileHolder)
         {
             Destroy(fileBox.gameObject);
@@ -152,22 +154,87 @@ public class FileManager : MonoBehaviour
     public void NameChanged()
     {
         enteredName = nameInput.text;
+        selectedBox = CheckFileName(enteredName);
+        selectedFile = (selectedBox) ? selectedBox.myFile.name : string.Empty;
+        UpdateBoxHighlight();
+    }
+
+    FileBox CheckFileName(string fileName)
+    {
+        foreach (var box in shownBoxes)
+        {
+            if (box.myFile.name == fileName)
+            {
+                return box;
+            }
+        }
+        return null;
     }
 
     public void DeleteFile()
     {
+        if (!DeleteState(nameInput.text))
+        {
+            warning.ShowWarning($"Could not delete file \"{((nameInput.text != string.Empty) ? nameInput.text : " ")}\"");
+        }
 
+        // update data and visuals
+
+        InitFiles();
+        UpdateFileView();
     }
 
     public void SaveFile()
     {
+        if (!SaveState(nameInput.text))
+        {
+            warning.ShowWarning($"Please enter a valid file name");
+        }
+        else selectedFile = nameInput.text;
 
+        // update data and visuals
+
+        InitFiles();
+        UpdateFileView();
     }
 
-    public void Close()
+    public void LoadFile()
     {
-        FilesOpen = false;
-        background.SetActive(false);
+        if (!LoadState(nameInput.text))
+        {
+            warning.ShowWarning($"Could not load file \"{((nameInput.text != string.Empty) ? nameInput.text : " ")}\"");
+        }
+        else ToggleViewer();
+    }
+
+    public void FileSelected(FileBox box)
+    {
+        selectedBox = box;
+        nameInput.text = box.myFile.name;
+        selectedFile = box.myFile.name;
+        UpdateBoxHighlight();
+    }
+
+    void UpdateBoxHighlight()
+    {
+        foreach (var box in shownBoxes)
+        {
+            if (box == selectedBox)
+            {
+                box.Highlight(true);
+            }
+            else
+            {
+                box.Highlight(false);
+            }
+        }
+    }
+
+    public void ToggleViewer()
+    {
+        FilesOpen = !FilesOpen;
+        background.SetActive(FilesOpen);
+        if (FilesOpen) UpdateFileView();
     }
 }
 
