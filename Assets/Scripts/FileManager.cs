@@ -40,7 +40,7 @@ public class FileManager : MonoBehaviour
         warning = FindFirstObjectByType<Warning>();
         InitSortIcons();
         background.SetActive(false);
-        InitFiles();
+        UpdateFiles();
     }
 
     void InitSortIcons()
@@ -52,7 +52,7 @@ public class FileManager : MonoBehaviour
         }
     }
 
-    void InitFiles()
+    void UpdateFiles()
     {
         allFiles.Clear();
 
@@ -139,7 +139,7 @@ public class FileManager : MonoBehaviour
     void UpdateFileView()
     {
         ClearFileView();
-        InitFiles();
+        UpdateFiles();
 
         foreach (var file in allFiles)
         {
@@ -224,7 +224,7 @@ public class FileManager : MonoBehaviour
 
         // update data and visuals
 
-        InitFiles();
+        UpdateFiles();
         UpdateFileView();
     }
 
@@ -238,7 +238,7 @@ public class FileManager : MonoBehaviour
 
         // update data and visuals
 
-        InitFiles();
+        UpdateFiles();
         UpdateFileView();
     }
 
