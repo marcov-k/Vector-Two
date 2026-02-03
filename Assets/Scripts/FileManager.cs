@@ -80,10 +80,12 @@ public class FileManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Sorts a list of SaveFiles in order from most recently modified.
+    /// Sorts a list of SaveFiles using the given sorting mode.
     /// </summary>
-    /// <param name="files">SaveFile list to be sorted.</param>
-    /// <returns>SaveFile list sorted by time modified.</returns>
+    /// <param name="files">List of SaveFiles to be sorted.</param>
+    /// <param name="mode">Sorting mode to sort by.</param>
+    /// <param name="reverse">Whether to reverse the direction of sorting.</param>
+    /// <returns>Sorted list of SaveFiles.</returns>
     List<SaveFile> SortFiles(List<SaveFile> files, uint mode, bool reverse)
     {
         var sortedFiles = new SaveFile[files.Count];
@@ -123,13 +125,13 @@ public class FileManager : MonoBehaviour
         bool output = false;
         switch(mode)
         {
-            case 0: // compare using name
+            case 0: // compare using name (alphabetically, case sensitive)
                 output = string.Compare(a.name, b.name) == 1;
                 break;
             case 1: // compare using time
                 output = a.time < b.time;
                 break;
-            case 2: // compare using size
+            case 2: // compare using size (in bytes)
                 output = a.byteSize < b.byteSize;
                 break;
         }
