@@ -3,7 +3,6 @@ using System;
 using static V2Objects;
 
 [RequireComponent(typeof(SpriteRenderer))]
-[RequireComponent(typeof(PhysObject))]
 public class V2Collider : V2Component
 {
     protected new SpriteRenderer renderer;

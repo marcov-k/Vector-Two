@@ -2,7 +2,6 @@ using UnityEngine;
 using static Constants;
 using static V2Objects;
 
-[RequireComponent(typeof(PhysObject))]
 public class Gravity : V2Component
 {
     /// <summary>

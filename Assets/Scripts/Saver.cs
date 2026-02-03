@@ -82,6 +82,18 @@ public static class Saver
                 (renderer.flipX, renderer.flipY) = (objData.rendererData.flipX, objData.rendererData.flipY);
                 (renderer.sortingLayerID, renderer.sortingOrder) = (objData.rendererData.sortingID, objData.rendererData.sortingOrder);
 
+                if (objData.components.Contains("Properties"))
+                {
+                    var comp = Type.GetType("Properties");
+                    obj.AddComponent(comp);
+                    objData.components.Remove("Properties");
+                }
+                if (objData.components.Contains("PhysObject"))
+                {
+                    var comp = Type.GetType("PhysObject");
+                    obj.AddComponent(comp);
+                    objData.components.Remove("PhysObject");
+                }
                 foreach (string compName in objData.components)
                 {
                     var comp = Type.GetType(compName);
