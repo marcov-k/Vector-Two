@@ -38,7 +38,6 @@ public class FileManager : MonoBehaviour
     void Awake()
     {
         warning = FindFirstObjectByType<Warning>();
-        UpdateFiles();
     }
 
     void Start()
@@ -151,7 +150,7 @@ public class FileManager : MonoBehaviour
 
         foreach (var file in allFiles)
         {
-            if (search == string.Empty || file.name.Contains(search))
+            if (search == string.Empty || file.name.ToLowerInvariant().Contains(search))
             {
                 var fileBoxObj = Instantiate(fileBoxPrefab, fileHolder);
                 var fileBox = fileBoxObj.GetComponent<FileBox>();
@@ -232,7 +231,6 @@ public class FileManager : MonoBehaviour
 
         // update data and visuals
 
-        UpdateFiles();
         UpdateFileView();
     }
 
@@ -246,7 +244,6 @@ public class FileManager : MonoBehaviour
 
         // update data and visuals
 
-        UpdateFiles();
         UpdateFileView();
     }
 
